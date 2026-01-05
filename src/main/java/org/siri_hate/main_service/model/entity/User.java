@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -14,7 +15,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String username;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -25,13 +26,13 @@ public class User {
     @JsonIgnore
     private Set<News> news;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<Project> ownedProjects;
 
-    @ManyToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private Set<Project> memberProjects;
+    private Set<ProjectMember> memberships = new HashSet<>();
 
     public User() {
     }
@@ -80,11 +81,11 @@ public class User {
         this.ownedProjects = ownedProjects;
     }
 
-    public Set<Project> getMemberProjects() {
-        return memberProjects;
+    public Set<ProjectMember> getMemberships() {
+        return memberships;
     }
 
-    public void setMemberProjects(Set<Project> memberProjects) {
-        this.memberProjects = memberProjects;
+    public void setMemberships(Set<ProjectMember> memberProjects) {
+        this.memberships = memberProjects;
     }
 }

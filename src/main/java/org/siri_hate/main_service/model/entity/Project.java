@@ -20,7 +20,7 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private User owner;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProjectMember> members = new HashSet<>();
@@ -54,8 +54,8 @@ public class Project {
     public Project() {
     }
 
-    public Project(User user, Set<ProjectMember> members, String projectName, String projectDescription, String projectLogoUrl, ProjectCategory category, List<ProjectLike> projectLikes, Boolean moderationPassed) {
-        this.user = user;
+    public Project(User owner, Set<ProjectMember> members, String projectName, String projectDescription, String projectLogoUrl, ProjectCategory category, List<ProjectLike> projectLikes, Boolean moderationPassed) {
+        this.owner = owner;
         this.members = members;
         this.projectName = projectName;
         this.projectDescription = projectDescription;
@@ -83,12 +83,12 @@ public class Project {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setOwner(User user) {
+        this.owner = user;
     }
 
     public Set<ProjectMember> getMembers() {

@@ -23,7 +23,7 @@ public interface ProjectMapper {
     void projectUpdate(ProjectFullRequest request, @MappingTarget Project existingProject);
 
     @Mapping(source = "category.name", target = "category")
-    @Mapping(source = "user", target = "projectOwner")
+    @Mapping(source = "owner", target = "projectOwner")
     @Mapping(source = "members", target = "members")
     @Mapping(target = "likes", expression = "java(getLikesCount(project))")
     @Mapping(target = "hasSurvey", expression = "java(project.getSurvey() != null)")

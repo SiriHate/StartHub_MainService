@@ -38,15 +38,13 @@ public class NewsCategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<NewsCategoryFullResponse> getNewsCategoryById(
-            @Positive @PathVariable Long id) {
+    public ResponseEntity<NewsCategoryFullResponse> getNewsCategoryById(@Positive @PathVariable Long id) {
         NewsCategoryFullResponse newsCategory = newsCategoryService.getNewsCategoryById(id);
         return new ResponseEntity<>(newsCategory, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateNewsCategory(
-            @Positive @PathVariable Long id, @RequestBody NewsCategoryRequest request) {
+    public ResponseEntity<String> updateNewsCategory(@Positive @PathVariable Long id, @RequestBody NewsCategoryRequest request) {
         newsCategoryService.updateNewsCategory(id, request);
         return new ResponseEntity<>("News category was successfully updated!", HttpStatus.OK);
     }

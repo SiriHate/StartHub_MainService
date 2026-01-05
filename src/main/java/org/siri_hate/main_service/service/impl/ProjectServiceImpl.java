@@ -51,7 +51,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public void createProject(String username, ProjectFullRequest project) {
         Project projectEntity = projectMapper.toProject(project);
-        projectEntity.setUser(userService.findOrCreateUser(username));
+        projectEntity.setOwner(userService.findOrCreateUser(username));
         projectEntity.setCategory(projectCategoryService.getProjectCategoryEntityById(project.getCategory().getId()));
         projectEntity.setModerationPassed(false);
 
