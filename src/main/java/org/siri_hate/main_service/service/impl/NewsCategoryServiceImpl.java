@@ -1,11 +1,12 @@
 package org.siri_hate.main_service.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.siri_hate.main_service.model.dto.mapper.NewsCategoryMapper;
-import org.siri_hate.main_service.model.dto.request.category.NewsCategoryRequest;
-import org.siri_hate.main_service.model.dto.response.category.NewsCategoryFullResponse;
-import org.siri_hate.main_service.model.dto.response.category.NewsCategorySummaryResponse;
-import org.siri_hate.main_service.model.entity.category.NewsCategory;
+import org.siri_hate.main_service.dto.NewsCategoryFullResponseDTO;
+import org.siri_hate.main_service.dto.NewsCategoryRequestDTO;
+import org.siri_hate.main_service.dto.NewsCategorySummaryResponseDTO;
+import org.siri_hate.main_service.model.mapper.NewsCategoryMapper;
+import org.siri_hate.main_service.model.entity.news.NewsCategory;
 import org.siri_hate.main_service.repository.NewsCategoryRepository;
 import org.siri_hate.main_service.service.NewsCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,61 +22,55 @@ public class NewsCategoryServiceImpl implements NewsCategoryService {
 
     @Autowired
     public NewsCategoryServiceImpl(
-            NewsCategoryRepository newsCategoryRepository, NewsCategoryMapper newsCategoryMapper) {
+            NewsCategoryRepository newsCategoryRepository,
+            NewsCategoryMapper newsCategoryMapper
+    )
+    {
         this.newsCategoryRepository = newsCategoryRepository;
         this.newsCategoryMapper = newsCategoryMapper;
     }
 
     @Override
     @Transactional
-    public void createNewsCategory(NewsCategoryRequest request) {
-        NewsCategory newsCategoryEntity = newsCategoryMapper.toNewsCategory(request);
-        newsCategoryRepository.save(newsCategoryEntity);
+    public NewsCategoryFullResponseDTO createNewsCategory(NewsCategoryRequestDTO request) {
+        NewsCategory domain = newsCategoryMapper.toNewsCategory(request);
+        newsCategoryRepository.save(domain);
+        return newsCategoryMapper.toNewsCategoryFullResponse(domain);
     }
 
     @Override
     public NewsCategory getNewsCategoryEntityById(Long id) {
-        return newsCategoryRepository
-                .findById(id)
-                .orElseThrow(() -> new RuntimeException("No news category with id: " + id));
+        return newsCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
-    public List<NewsCategorySummaryResponse> getAllNewsCategory() {
+    public List<NewsCategorySummaryResponseDTO> getNewsCategories() {
         List<NewsCategory> newsCategories = newsCategoryRepository.findAll();
         if (newsCategories.isEmpty()) {
-            throw new RuntimeException("No news categories found!");
+            throw new EntityNotFoundException();
         }
         return newsCategoryMapper.toNewsCategorySummaryResponseList(newsCategories);
     }
 
     @Override
-    public NewsCategoryFullResponse getNewsCategoryById(Long id) {
-        NewsCategory newsCategory =
-                newsCategoryRepository
-                        .findById(id)
-                        .orElseThrow(() -> new RuntimeException("No news category with id: " + id));
+    public NewsCategoryFullResponseDTO getNewsCategory(Long id) {
+        NewsCategory newsCategory = newsCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         return newsCategoryMapper.toNewsCategoryFullResponse(newsCategory);
     }
 
     @Override
     @Transactional
-    public void updateNewsCategory(Long id, NewsCategoryRequest request) {
-        NewsCategory newsCategory =
-                newsCategoryRepository
-                        .findById(id)
-                        .orElseThrow(() -> new RuntimeException("No news category with id: " + id));
-        newsCategoryMapper.updateNewsCategoryFromRequest(request, newsCategory);
+    public NewsCategoryFullResponseDTO updateNewsCategory(Long id, NewsCategoryRequestDTO request) {
+        NewsCategory newsCategory = newsCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        newsCategory = newsCategoryMapper.updateNewsCategory(request, newsCategory);
         newsCategoryRepository.save(newsCategory);
+        return newsCategoryMapper.toNewsCategoryFullResponse(newsCategory);
     }
 
     @Override
     @Transactional
     public void deleteNewsCategory(Long id) {
-        NewsCategory newsCategory =
-                newsCategoryRepository
-                        .findById(id)
-                        .orElseThrow(() -> new RuntimeException("No news category with id: " + id));
+        NewsCategory newsCategory = newsCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         newsCategoryRepository.delete(newsCategory);
     }
 }

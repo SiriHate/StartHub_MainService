@@ -1,23 +1,23 @@
 package org.siri_hate.main_service.service;
 
-import org.siri_hate.main_service.model.dto.request.category.NewsCategoryRequest;
-import org.siri_hate.main_service.model.dto.response.category.NewsCategoryFullResponse;
-import org.siri_hate.main_service.model.dto.response.category.NewsCategorySummaryResponse;
-import org.siri_hate.main_service.model.entity.category.NewsCategory;
+import org.siri_hate.main_service.dto.NewsCategoryFullResponseDTO;
+import org.siri_hate.main_service.dto.NewsCategoryRequestDTO;
+import org.siri_hate.main_service.dto.NewsCategorySummaryResponseDTO;
+import org.siri_hate.main_service.model.entity.news.NewsCategory;
 
 import java.util.List;
 
 public interface NewsCategoryService {
 
-    void createNewsCategory(NewsCategoryRequest request);
+    NewsCategoryFullResponseDTO createNewsCategory(NewsCategoryRequestDTO request);
 
-    NewsCategory getNewsCategoryEntityById(Long id);
+    List<NewsCategorySummaryResponseDTO> getNewsCategories();
 
-    List<NewsCategorySummaryResponse> getAllNewsCategory();
+    NewsCategoryFullResponseDTO getNewsCategory(Long id);
 
-    NewsCategoryFullResponse getNewsCategoryById(Long id);
-
-    void updateNewsCategory(Long id, NewsCategoryRequest request);
+    NewsCategoryFullResponseDTO updateNewsCategory(Long id, NewsCategoryRequestDTO request);
 
     void deleteNewsCategory(Long id);
+
+    NewsCategory getNewsCategoryEntityById(Long id);
 }

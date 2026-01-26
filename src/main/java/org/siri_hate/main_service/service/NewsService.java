@@ -1,29 +1,21 @@
 package org.siri_hate.main_service.service;
 
-import org.siri_hate.main_service.model.dto.request.news.NewsFullRequest;
-import org.siri_hate.main_service.model.dto.response.news.NewsFullResponse;
-import org.siri_hate.main_service.model.dto.response.news.NewsSummaryResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.siri_hate.main_service.dto.NewsFullResponseDTO;
+import org.siri_hate.main_service.dto.NewsPageResponseDTO;
+import org.siri_hate.main_service.dto.NewsRequestDTO;
 
 public interface NewsService {
+    NewsFullResponseDTO createNews(String ownerUsername, NewsRequestDTO request);
 
-    void createNews(String username, NewsFullRequest news);
+    NewsFullResponseDTO getNewsById(Long id);
 
-    NewsFullResponse getNewsById(Long id);
+    NewsPageResponseDTO getNews(String category, String query, int page, int size, boolean isModerationPassed);
 
-    Page<NewsSummaryResponse> getNewsByCategoryAndSearchQuery(
-            String category, String query, Pageable pageable);
-
-    Page<NewsSummaryResponse> getModeratedNews(String category, String query, Pageable pageable);
-
-    Page<NewsSummaryResponse> getUnmoderatedNews(String category, String query, Pageable pageable);
-
-    void updateNews(Long id, NewsFullRequest news);
+    NewsFullResponseDTO updateNews(Long id, NewsRequestDTO request);
 
     void deleteNews(Long id);
 
     void updateNewsModerationStatus(Long id, Boolean moderationPassed);
 
-    Page<NewsSummaryResponse> getNewsByUser(String username, String query, Pageable pageable);
+    NewsPageResponseDTO getNews(String username, String query, int page, int size);
 }

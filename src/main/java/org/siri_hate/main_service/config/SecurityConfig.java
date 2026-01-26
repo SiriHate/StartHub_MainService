@@ -48,7 +48,11 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> new User(username, "", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        return username -> new User(
+                username,
+                "",
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
     }
 
     @Bean

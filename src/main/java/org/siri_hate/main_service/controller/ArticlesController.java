@@ -1,26 +1,19 @@
 package org.siri_hate.main_service.controller;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
-import org.siri_hate.main_service.model.dto.request.article.ArticleFullRequest;
-import org.siri_hate.main_service.model.dto.response.article.ArticleFullResponse;
-import org.siri_hate.main_service.model.dto.response.article.ArticleSummaryResponse;
+import org.siri_hate.main_service.api.ArticleApi;
+import org.siri_hate.main_service.dto.ArticleFullResponseDTO;
+import org.siri_hate.main_service.dto.ArticlePageResponseDTO;
+import org.siri_hate.main_service.dto.ArticleRequestDTO;
 import org.siri_hate.main_service.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Validated
-@RequestMapping("/api/v1/main_service/articles")
-public class ArticlesController {
+public class ArticlesController implements ArticleApi {
 
     private final ArticleService articleService;
 
@@ -29,55 +22,49 @@ public class ArticlesController {
         this.articleService = articleService;
     }
 
-    @PostMapping
-    public ResponseEntity<String> createArticle(@Valid @RequestBody ArticleFullRequest article) {
+    @Override
+    public ResponseEntity<ArticleFullResponseDTO> createArticle(ArticleRequestDTO articleRequestDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        articleService.createArticle(username, article);
-        return new ResponseEntity<>("Article was successfully created", HttpStatus.CREATED);
+        var response = articleService.createArticle(username, articleRequestDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ArticleFullResponse> getArticleById(@PathVariable Long id) {
-        ArticleFullResponse article = articleService.getArticleById(id);
-        return new ResponseEntity<>(article, HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<Page<ArticleSummaryResponse>> getAllArticles(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String query,
-            @RequestParam(required = false) Boolean moderationPassed,
-            @PageableDefault() Pageable pageable) {
-        Page<ArticleSummaryResponse> articles;
-        if (moderationPassed != null) {
-            articles = moderationPassed ?
-                    articleService.getModeratedArticles(category, query, pageable) :
-                    articleService.getUnmoderatedArticles(category, query, pageable);
-        } else {
-            articles = articleService.getArticlesByCategoryAndSearchQuery(category, query, pageable);
-        }
-        return new ResponseEntity<>(articles, HttpStatus.OK);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updateArticle(
-            @PathVariable Long id, @Valid @RequestBody ArticleFullRequest article) {
-        articleService.updateArticle(id, article);
-        return new ResponseEntity<>("Article has been successfully modified", HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteArticle(@PathVariable Long id) {
+    @Override
+    public ResponseEntity<Void> deleteArticle(Long id) {
         articleService.deleteArticle(id);
-        return new ResponseEntity<>("Article has been successfully deleted", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/{id}/moderationPassed")
-    public ResponseEntity<String> updateArticleModerationStatus(
-            @PathVariable @Positive Long id,
-            @RequestBody Boolean moderationPassed) {
-        articleService.updateArticleModerationStatus(id, moderationPassed);
-        return new ResponseEntity<>("Article moderation status has been successfully updated", HttpStatus.OK);
+    @Override
+    public ResponseEntity<ArticleFullResponseDTO> getArticle(Long id) {
+        var response = articleService.getArticle(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ArticlePageResponseDTO> getArticles(String category, String query, Boolean moderationPassed, Integer page, Integer size) {
+        var response = articleService.getArticles(category, query, page, size, moderationPassed);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ArticlePageResponseDTO> getMyArticles(String query, Integer page, Integer size) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        var response = articleService.getArticles(username, query, page, size);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ArticleFullResponseDTO> updateArticle(Long id, ArticleRequestDTO articleRequestDTO) {
+        var response = articleService.updateArticle(id, articleRequestDTO);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> updateArticleModerationPassed(Long id, ArticleFullResponseDTO articleFullResponseDTO) {
+        articleService.updateArticleModerationStatus(id, true);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

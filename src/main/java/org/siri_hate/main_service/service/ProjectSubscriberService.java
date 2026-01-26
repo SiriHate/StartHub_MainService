@@ -7,5 +7,5 @@ public interface ProjectSubscriberService {
 
     void notifySubscribersAboutUpdate(Long projectId, String projectName);
 
-    boolean isUserSubscribed(Long projectId, String username);
+    boolean getSubscribeStatus(Long projectId, String username);
 }

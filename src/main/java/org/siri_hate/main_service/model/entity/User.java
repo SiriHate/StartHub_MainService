@@ -1,14 +1,22 @@
 package org.siri_hate.main_service.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.siri_hate.main_service.model.entity.article.Article;
+import org.siri_hate.main_service.model.entity.news.News;
+import org.siri_hate.main_service.model.entity.project.Project;
+import org.siri_hate.main_service.model.entity.project.ProjectMember;
+import org.siri_hate.main_service.model.entity.survey.SurveySubmission;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        indexes = @Index(name = "username_idx",  columnList="username", unique = true)
+)
 public class User {
 
     @Id
@@ -18,24 +26,27 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Article> articles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<News> news;
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private Set<Project> ownedProjects;
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private Set<ProjectMember> memberships = new HashSet<>();
 
-    public User() {
-    }
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "respondent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SurveySubmission> surveySubmissions = new HashSet<>();
+
+    public User() {}
 
     public User(String username) {
         this.username = username;
@@ -87,5 +98,13 @@ public class User {
 
     public void setMemberships(Set<ProjectMember> memberProjects) {
         this.memberships = memberProjects;
+    }
+
+    public Set<SurveySubmission> getSurveySubmissions() {
+        return surveySubmissions;
+    }
+
+    public void setSurveySubmissions(Set<SurveySubmission> surveySubmissions) {
+        this.surveySubmissions = surveySubmissions;
     }
 }

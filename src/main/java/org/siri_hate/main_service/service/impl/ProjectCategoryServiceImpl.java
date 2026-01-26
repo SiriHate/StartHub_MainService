@@ -1,11 +1,12 @@
 package org.siri_hate.main_service.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.siri_hate.main_service.model.dto.mapper.ProjectCategoryMapper;
-import org.siri_hate.main_service.model.dto.request.category.ProjectCategoryRequest;
-import org.siri_hate.main_service.model.dto.response.category.ProjectCategoryFullResponse;
-import org.siri_hate.main_service.model.dto.response.category.ProjectCategorySummaryResponse;
-import org.siri_hate.main_service.model.entity.category.ProjectCategory;
+import org.siri_hate.main_service.dto.ProjectCategoryFullResponseDTO;
+import org.siri_hate.main_service.dto.ProjectCategoryRequestDTO;
+import org.siri_hate.main_service.dto.ProjectCategorySummaryResponseDTO;
+import org.siri_hate.main_service.model.mapper.ProjectCategoryMapper;
+import org.siri_hate.main_service.model.entity.project.ProjectCategory;
 import org.siri_hate.main_service.repository.ProjectCategoryRepository;
 import org.siri_hate.main_service.service.ProjectCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,58 +30,45 @@ public class ProjectCategoryServiceImpl implements ProjectCategoryService {
 
     @Override
     @Transactional
-    public void createProjectCategory(ProjectCategoryRequest request) {
-        ProjectCategory projectCategoryEntity = projectCategoryMapper.toProjectCategory(request);
-        projectCategoryRepository.save(projectCategoryEntity);
+    public ProjectCategoryFullResponseDTO createProjectCategory(ProjectCategoryRequestDTO request) {
+        ProjectCategory category = projectCategoryMapper.toProjectCategory(request);
+        projectCategoryRepository.save(category);
+        return projectCategoryMapper.toProjectCategoryFullResponse(category);
     }
 
     @Override
-    public List<ProjectCategorySummaryResponse> getAllProjectCategory() {
-        List<ProjectCategory> projectCategories = projectCategoryRepository.findAll();
-        if (projectCategories.isEmpty()) {
-            throw new RuntimeException("No project categories found!");
+    public List<ProjectCategorySummaryResponseDTO> getProjectCategories() {
+        List<ProjectCategory> category = projectCategoryRepository.findAll();
+        if (category.isEmpty()) {
+            throw new EntityNotFoundException();
         }
-        return projectCategoryMapper.toProjectCategorySummaryResponseList(projectCategories);
+        return projectCategoryMapper.toProjectCategoriesSummaryResponse(category);
     }
 
     @Override
-    public ProjectCategoryFullResponse getProjectCategoryById(Long id) {
-        ProjectCategory projectCategory =
-                projectCategoryRepository
-                        .findById(id)
-                        .orElseThrow(
-                                () -> new RuntimeException("No project category with id: " + id));
-        return projectCategoryMapper.toProjectCategoryFullResponse(projectCategory);
+    public ProjectCategoryFullResponseDTO getProjectCategory(Long id) {
+        ProjectCategory category = projectCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return projectCategoryMapper.toProjectCategoryFullResponse(category);
     }
 
     @Override
     public ProjectCategory getProjectCategoryEntityById(Long id) {
-        return projectCategoryRepository
-                .findById(id)
-                .orElseThrow(
-                        () -> new RuntimeException("No project category with id: " + id));
+        return projectCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
     @Transactional
-    public void updateProjectCategory(Long id, ProjectCategoryRequest request) {
-        ProjectCategory projectCategory =
-                projectCategoryRepository
-                        .findById(id)
-                        .orElseThrow(
-                                () -> new RuntimeException("No project category with id: " + id));
-        projectCategoryMapper.updateProjectCategoryFromRequest(request, projectCategory);
-        projectCategoryRepository.save(projectCategory);
+    public ProjectCategoryFullResponseDTO updateProjectCategory(Long id, ProjectCategoryRequestDTO request) {
+        ProjectCategory category = projectCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        category = projectCategoryMapper.updateProjectCategoryFromRequest(request, category);
+        projectCategoryRepository.save(category);
+        return projectCategoryMapper.toProjectCategoryFullResponse(category);
     }
 
     @Override
     @Transactional
     public void deleteProjectCategory(Long id) {
-        ProjectCategory projectCategory =
-                projectCategoryRepository
-                        .findById(id)
-                        .orElseThrow(
-                                () -> new RuntimeException("No project category with id: " + id));
-        projectCategoryRepository.delete(projectCategory);
+        ProjectCategory category = projectCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        projectCategoryRepository.delete(category);
     }
 }

@@ -25,14 +25,7 @@ public class SurveyQuestion {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SurveyAnswer> answers = new ArrayList<>();
 
-    public SurveyQuestion() {
-    }
-
-    public SurveyQuestion(Long id, ProjectSurvey survey, String questionText) {
-        this.id = id;
-        this.survey = survey;
-        this.questionText = questionText;
-    }
+    public SurveyQuestion() {}
 
     public Long getId() {
         return id;

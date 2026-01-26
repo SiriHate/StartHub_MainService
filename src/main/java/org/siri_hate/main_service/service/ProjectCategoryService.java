@@ -1,23 +1,22 @@
 package org.siri_hate.main_service.service;
 
-import org.siri_hate.main_service.model.dto.request.category.ProjectCategoryRequest;
-import org.siri_hate.main_service.model.dto.response.category.ProjectCategoryFullResponse;
-import org.siri_hate.main_service.model.dto.response.category.ProjectCategorySummaryResponse;
-import org.siri_hate.main_service.model.entity.category.ProjectCategory;
+import org.siri_hate.main_service.dto.ProjectCategoryFullResponseDTO;
+import org.siri_hate.main_service.dto.ProjectCategoryRequestDTO;
+import org.siri_hate.main_service.dto.ProjectCategorySummaryResponseDTO;
+import org.siri_hate.main_service.model.entity.project.ProjectCategory;
 
 import java.util.List;
 
 public interface ProjectCategoryService {
+    ProjectCategoryFullResponseDTO createProjectCategory(ProjectCategoryRequestDTO request);
 
-    void createProjectCategory(ProjectCategoryRequest request);
+    List<ProjectCategorySummaryResponseDTO> getProjectCategories();
 
-    List<ProjectCategorySummaryResponse> getAllProjectCategory();
+    ProjectCategoryFullResponseDTO getProjectCategory(Long id);
 
-    ProjectCategoryFullResponse getProjectCategoryById(Long id);
-
-    ProjectCategory getProjectCategoryEntityById(Long id);
-
-    void updateProjectCategory(Long id, ProjectCategoryRequest request);
+    ProjectCategoryFullResponseDTO updateProjectCategory(Long id, ProjectCategoryRequestDTO request);
 
     void deleteProjectCategory(Long id);
+
+    ProjectCategory getProjectCategoryEntityById(Long id);
 }

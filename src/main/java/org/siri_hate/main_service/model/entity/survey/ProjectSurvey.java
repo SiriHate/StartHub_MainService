@@ -2,7 +2,7 @@ package org.siri_hate.main_service.model.entity.survey;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.siri_hate.main_service.model.entity.Project;
+import org.siri_hate.main_service.model.entity.project.Project;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +23,7 @@ public class ProjectSurvey {
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SurveyQuestion> questions = new ArrayList<>();
 
-    public ProjectSurvey() {
-    }
-
-    public ProjectSurvey(Long id, Project project, List<SurveyQuestion> questions) {
-        this.id = id;
-        this.project = project;
-        this.questions = questions;
-    }
+    public ProjectSurvey() {}
 
     public Long getId() {
         return id;

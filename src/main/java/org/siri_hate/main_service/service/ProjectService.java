@@ -1,41 +1,34 @@
 package org.siri_hate.main_service.service;
 
-import org.siri_hate.main_service.model.dto.request.project.ProjectFullRequest;
-import org.siri_hate.main_service.model.dto.response.project.ProjectFullResponse;
-import org.siri_hate.main_service.model.dto.response.project.ProjectSummaryResponse;
-import org.siri_hate.main_service.model.entity.Project;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.siri_hate.main_service.dto.ProjectFullResponseDTO;
+import org.siri_hate.main_service.dto.ProjectPageResponseDTO;
+import org.siri_hate.main_service.dto.ProjectRequestDTO;
+import org.siri_hate.main_service.model.entity.project.Project;
 
 public interface ProjectService {
+    ProjectFullResponseDTO createProject(String ownerUsername, ProjectRequestDTO request);
 
-    void createProject(String username, ProjectFullRequest project);
+    ProjectPageResponseDTO getProjects(
+            String category,
+            String query,
+            int page,
+            int size,
+            boolean isModerationPassed
+    );
 
-    Page<ProjectSummaryResponse> getProjectsByCategoryAndSearchQuery(
-            String category, String query, Pageable pageable);
+    ProjectFullResponseDTO getProject(Long id);
 
-    ProjectFullResponse getProjectInfoById(Long id);
+    Project getProjectEntity(Long id);
 
-    Project getProjectById(Long id);
+    ProjectFullResponseDTO updateProject( Long id, ProjectRequestDTO request);
 
-    void updateProject(ProjectFullRequest project, Long id);
+    Project updateProject(Project project);
 
-    void deleteProjectById(Long id);
+    void deleteProject(Long id);
 
     boolean toggleProjectLike(String username, Long projectId);
 
-    Long getProjectLikesCount(Long projectId);
-
-    Page<ProjectSummaryResponse> getModeratedProjects(
-            String category, String query, Pageable pageable);
-
-    Page<ProjectSummaryResponse> getUnmoderatedProjects(
-            String category, String query, Pageable pageable);
+    long getProjectLikesCount(Long projectId);
 
     void updateProjectModerationStatus(Long projectId, Boolean moderationPassed);
-
-    Page<ProjectSummaryResponse> getProjectsByOwner(String username, String query, Pageable pageable);
-
-    Page<ProjectSummaryResponse> getProjectsByMember(
-            String username, String query, Pageable pageable);
 }

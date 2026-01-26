@@ -1,16 +1,16 @@
 package org.siri_hate.main_service.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.siri_hate.main_service.model.dto.mapper.ArticleCategoryMapper;
-import org.siri_hate.main_service.model.dto.request.category.ArticleCategoryRequest;
-import org.siri_hate.main_service.model.dto.response.category.ArticleCategoryFullResponse;
-import org.siri_hate.main_service.model.dto.response.category.ArticleCategorySummaryResponse;
-import org.siri_hate.main_service.model.entity.category.ArticleCategory;
+import org.siri_hate.main_service.dto.ArticleCategoryFullResponseDTO;
+import org.siri_hate.main_service.dto.ArticleCategorySummaryResponseDTO;
+import org.siri_hate.main_service.model.mapper.ArticleCategoryMapper;
+import org.siri_hate.main_service.model.entity.article.ArticleCategory;
 import org.siri_hate.main_service.repository.ArticleCategoryRepository;
 import org.siri_hate.main_service.service.ArticleCategoryService;
+import org.siri_hate.main_service.dto.ArticleCategoryRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -28,43 +28,45 @@ public class ArticleCategoryServiceImpl implements ArticleCategoryService {
 
     @Override
     @Transactional
-    public void createArticleCategory(@RequestBody ArticleCategoryRequest request) {
-        ArticleCategory articleCategoryEntity = articleCategoryMapper.toArticleCategory(request);
-        articleCategoryRepository.save(articleCategoryEntity);
+    public ArticleCategoryFullResponseDTO createArticleCategory(ArticleCategoryRequestDTO request) {
+        ArticleCategory articleCategory = articleCategoryMapper.toArticleCategory(request);
+        articleCategoryRepository.save(articleCategory);
+        return articleCategoryMapper.toArticleCategoryFullResponse(articleCategory);
     }
 
     @Override
-    public List<ArticleCategorySummaryResponse> getAllArticleCategory() {
+    public List<ArticleCategorySummaryResponseDTO> getArticleCategories() {
         List<ArticleCategory> articleCategories = articleCategoryRepository.findAll();
         if (articleCategories.isEmpty()) {
-            throw new RuntimeException("No article categories found!");
+            throw new EntityNotFoundException("No article categories found!");
         }
         return articleCategoryMapper.toArticleCategorySummaryResponseList(articleCategories);
     }
 
     @Override
-    public ArticleCategoryFullResponse getArticleCategoryById(Long id) {
-        ArticleCategory articleCategory = articleCategoryRepository.findById(id).orElseThrow(() -> new RuntimeException("No article category with id: " + id));
+    public ArticleCategoryFullResponseDTO getArticleCategory(Long id) {
+        ArticleCategory articleCategory = articleCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         return articleCategoryMapper.toArticleCategoryFullResponse(articleCategory);
     }
 
     @Override
     public ArticleCategory getArticleCategoryEntityById(Long id) {
-        return articleCategoryRepository.findById(id).orElseThrow(() -> new RuntimeException("No article category with id: " + id));
+        return articleCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
     @Transactional
-    public void updateArticleCategory(Long id, ArticleCategoryRequest request) {
-        ArticleCategory articleCategory = articleCategoryRepository.findById(id).orElseThrow(() -> new RuntimeException("No article category with id: " + id));
-        articleCategoryMapper.updateArticleCategoryFromRequest(request, articleCategory);
+    public ArticleCategoryFullResponseDTO updateArticleCategory(Long id, ArticleCategoryRequestDTO request) {
+        ArticleCategory articleCategory = articleCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        articleCategory = articleCategoryMapper.updateArticleCategory(request, articleCategory);
         articleCategoryRepository.save(articleCategory);
+        return articleCategoryMapper.toArticleCategoryFullResponse(articleCategory);
     }
 
     @Override
     @Transactional
     public void deleteArticleCategory(Long id) {
-        ArticleCategory articleCategory = articleCategoryRepository.findById(id).orElseThrow(() -> new RuntimeException("No article category with id: " + id));
+        ArticleCategory articleCategory = articleCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         articleCategoryRepository.delete(articleCategory);
     }
 }

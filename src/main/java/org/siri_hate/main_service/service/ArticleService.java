@@ -1,29 +1,21 @@
 package org.siri_hate.main_service.service;
 
-import org.siri_hate.main_service.model.dto.request.article.ArticleFullRequest;
-import org.siri_hate.main_service.model.dto.response.article.ArticleFullResponse;
-import org.siri_hate.main_service.model.dto.response.article.ArticleSummaryResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.siri_hate.main_service.dto.ArticleFullResponseDTO;
+import org.siri_hate.main_service.dto.ArticlePageResponseDTO;
+import org.siri_hate.main_service.dto.ArticleRequestDTO;
 
 public interface ArticleService {
+    ArticleFullResponseDTO createArticle(String ownerUsername, ArticleRequestDTO request);
 
-    void createArticle(String username, ArticleFullRequest article);
+    ArticleFullResponseDTO getArticle(Long id);
 
-    ArticleFullResponse getArticleById(Long id);
+    ArticlePageResponseDTO getArticles(String category, String query, int page, int size, boolean isModerationPassed);
 
-    Page<ArticleSummaryResponse> getArticlesByCategoryAndSearchQuery(
-            String category, String query, Pageable pageable);
-
-    Page<ArticleSummaryResponse> getModeratedArticles(String category, String query, Pageable pageable);
-
-    Page<ArticleSummaryResponse> getUnmoderatedArticles(String category, String query, Pageable pageable);
-
-    void updateArticle(Long id, ArticleFullRequest article);
+    ArticleFullResponseDTO updateArticle(Long id, ArticleRequestDTO article);
 
     void deleteArticle(Long id);
 
     void updateArticleModerationStatus(Long id, Boolean moderationPassed);
 
-    Page<ArticleSummaryResponse> getArticlesByUser(String username, String query, Pageable pageable);
+    ArticlePageResponseDTO getArticles(String username, String query, int page, int size);
 }

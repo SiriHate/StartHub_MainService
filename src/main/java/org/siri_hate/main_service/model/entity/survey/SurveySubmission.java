@@ -26,7 +26,7 @@ public class SurveySubmission {
     private User respondent;
 
     @Column(name = "submitted_at", nullable = false)
-    private LocalDateTime submittedAt = LocalDateTime.now();
+    private final LocalDateTime submittedAt;
 
     @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SurveyAnswer> responses = new ArrayList<>();
@@ -37,21 +37,7 @@ public class SurveySubmission {
     private Integer averageRating;
 
     public SurveySubmission() {
-    }
-
-    public SurveySubmission(
-            Long id,
-            ProjectSurvey survey,
-            User respondent,
-            LocalDateTime submittedAt,
-            List<SurveyAnswer> responses,
-            Integer averageRating) {
-        this.id = id;
-        this.survey = survey;
-        this.respondent = respondent;
-        this.submittedAt = submittedAt;
-        this.responses = responses;
-        this.averageRating = averageRating;
+        this.submittedAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -80,10 +66,6 @@ public class SurveySubmission {
 
     public LocalDateTime getSubmittedAt() {
         return submittedAt;
-    }
-
-    public void setSubmittedAt(LocalDateTime submittedAt) {
-        this.submittedAt = submittedAt;
     }
 
     public List<SurveyAnswer> getResponses() {

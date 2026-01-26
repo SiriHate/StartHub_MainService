@@ -1,0 +1,1922 @@
+openapi: 3.1.0
+info:
+  title: User Service API
+  version: 1.0.0
+  description: OpenAPI спецификация для основного сервиса
+
+security:
+  - bearerAuth: [ ]
+
+paths:
+
+  /api/v1/main_service/projects/{projectId}/subscriptions:
+    post:
+      tags:
+        - ProjectSubscription
+      summary: Подписка на проект
+      description: Подписывает текущего пользователя на указанный проект.
+      operationId: subscribeToProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Подписка успешно выполнена
+          content: { }
+    delete:
+      tags:
+        - ProjectSubscription
+      summary: Отписка от проекта
+      description: Отписывает текущего пользователя от указанного проекта.
+      operationId: unsubscribeFromProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Пользователь успешно отписан
+          content: { }
+    get:
+      tags:
+        - ProjectSubscription
+      summary: Проверка подписки пользователя
+      description: Проверяет, подписан ли текущий пользователь на проект.
+      operationId: isUserSubscribed
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Статус подписки
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+
+  /api/v1/main_service/projects/{projectId}/surveys:
+    post:
+      tags:
+        - ProjectSurvey
+      summary: Создание опроса для проекта
+      description: Создает новый опрос для указанного проекта.
+      operationId: createProjectSurvey
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectSurveyRequest'
+      responses:
+        '201':
+          description: Опрос успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectSurveyFullResponse'
+    get:
+      tags:
+        - ProjectSurvey
+      summary: Получение опроса проекта
+      description: Возвращает существующий опрос для указанного проекта.
+      operationId: getProjectSurvey
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Информация об опросе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectSurveyFullResponse'
+    delete:
+      tags:
+        - ProjectSurvey
+      summary: Удаление опроса проекта
+      description: Удаляет опрос для указанного проекта.
+      operationId: deleteProjectSurvey
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Опрос успешно удален
+          content: { }
+
+  /api/v1/main_service/projects/{projectId}/surveys/submissions:
+    post:
+      tags:
+        - ProjectSurvey
+      summary: Отправка ответов на опрос
+      description: Отправляет ответы текущего пользователя на опрос проекта.
+      operationId: submitProjectSurveyAnswers
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SurveySubmissionRequest'
+      responses:
+        '201':
+          description: Ответы успешно отправлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SurveySubmissionFullResponse'
+    get:
+      tags:
+        - ProjectSurvey
+      summary: Получение всех отправленных ответов
+      description: Возвращает список всех отправленных ответов на опрос проекта. Поддерживается сортировка по параметру `sort`.
+      operationId: getProjectSurveySubmissions
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+        - name: sort
+          in: query
+          required: false
+          description: Параметр сортировки (например, по дате отправки)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список ответов на опрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SurveySubmissionFullResponse'
+
+  /api/v1/main_service/projects/{projectId}/comments:
+    post:
+      tags:
+        - ProjectComment
+      summary: Создание комментария к проекту
+      description: Добавляет комментарий текущего пользователя к указанному проекту.
+      operationId: createProjectComment
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      responses:
+        '200':
+          description: Комментарий успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentFullResponse'
+    get:
+      tags:
+        - ProjectComment
+      summary: Получение комментариев проекта
+      description: Возвращает список всех комментариев к проекту.
+      operationId: getProjectComments
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentFullResponse'
+
+  /api/v1/main_service/comments/{id}:
+    delete:
+      tags:
+        - ProjectComment
+      summary: Удаление комментария
+      description: Удаляет комментарий с указанным идентификатором. Доступно только автору комментария.
+      operationId: deleteComment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Комментарий успешно удален
+          content: { }
+
+  /api/v1/main_service/projects:
+    post:
+      tags:
+        - Project
+      summary: Создание проекта
+      description: Создает новый проект. Использует имя пользователя из контекста безопасности.
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '201':
+          description: Проект успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectFullResponse'
+    get:
+      tags:
+        - Project
+      summary: Получение списка проектов
+      description: Возвращает список проектов с поддержкой фильтрации по категории, поисковому запросу и статусу модерации. Поддерживает постраничный вывод.
+      operationId: getProjects
+      parameters:
+        - name: category
+          in: query
+          description: Фильтр по категории проекта
+          schema:
+            type: string
+        - name: query
+          in: query
+          description: Поисковый запрос по названию проекта
+          schema:
+            type: string
+        - name: moderationPassed
+          in: query
+          description: Фильтр по статусу модерации
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          description: Номер страницы
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          required: true
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: Список проектов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectPageResponse'
+
+  /api/v1/main_service/projects/{id}:
+    get:
+      tags:
+        - Project
+      summary: Получение проекта по ID
+      description: Возвращает полную информацию о проекте по идентификатору.
+      operationId: getProject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Информация о проекте
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectFullResponse'
+    patch:
+      tags:
+        - Project
+      summary: Обновление проекта
+      description: Обновляет данные проекта по идентификатору.
+      operationId: updateProject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '200':
+          description: Информация о проекте
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectFullResponse'
+    delete:
+      tags:
+        - Project
+      summary: Удаление проекта
+      description: Удаляет проект по идентификатору.
+      operationId: deleteProject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Проект успешно удален
+
+  /api/v1/main_service/projects/{id}/likes:
+    post:
+      tags:
+        - Project
+      summary: Лайк/дизлайк проекта
+      description: Переключает лайк текущего пользователя для указанного проекта.
+      operationId: toggleProjectLike
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Состояние лайка после операции
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+
+  /api/v1/main_service/projects/{id}/likes/count:
+    get:
+      tags:
+        - Project
+      summary: Получение количества лайков проекта
+      description: Возвращает текущее количество лайков проекта.
+      operationId: getProjectLikesCount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Количество лайков проекта
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+
+  /api/v1/main_service/projects/{id}/moderationPassed:
+    patch:
+      tags:
+        - Project
+      summary: Обновление статуса модерации проекта
+      description: Устанавливает статус прохождения модерации для проекта.
+      operationId: updateProjectModerationStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор проекта
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: boolean
+              example: true
+      responses:
+        '200':
+          description: Статус модерации успешно обновлен
+
+  /api/v1/main_service/articles:
+    post:
+      tags:
+        - Article
+      summary: Создание статьи
+      description: Создает новую статью от имени текущего пользователя
+      operationId: createArticle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleRequest'
+      responses:
+        '201':
+          description: Статья была успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleFullResponse'
+        '400':
+          description: Ошибка валидации
+        '401':
+          description: Неавторизованный доступ
+    get:
+      tags:
+        - Article
+      summary: Получение списка статей
+      description: Возвращает список статей с фильтрацией и пагинацией
+      operationId: getArticles
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Фильтр по категории
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Поисковый запрос по заголовку или содержимому
+        - in: query
+          name: moderationPassed
+          schema:
+            type: boolean
+          description: Фильтр по статусу модерации
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: Номер страницы для пагинации
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+          description: Размер страницы для пагинации
+      responses:
+        '200':
+          description: Список статей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticlePageResponse'
+        '400':
+          description: Ошибка параметров запроса
+
+  /api/v1/main_service/users/{username}:
+    delete:
+      tags:
+        - User
+      summary: Удаление пользователя по его username
+      description: Удаление пользователя по его username
+      operationId: deleteUserByUsername
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Пользователь успешно удален
+        '404':
+          description: Пользователь не найден
+
+  /api/v1/main_service/articles/me:
+    get:
+      tags:
+        - Article
+      summary: Получение статей созданных текущим пользователем с пагинацией
+      description: Получение статей созданных текущим пользователем с пагинацией
+      operationId: getMyArticles
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Поисковый запрос по заголовку или содержимому
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: Номер страницы для пагинации
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+          description: Размер страницы для пагинации
+      responses:
+        '200':
+          description: Список статей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticlePageResponse'
+        '400':
+          description: Ошибка параметров запроса
+
+  /api/v1/main_service/articles/{id}:
+    get:
+      tags:
+        - Article
+      summary: Получение статьи по ID
+      description: Получение статьи по ID
+      operationId: getArticle
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Статья
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleFullResponse'
+        '404':
+          description: Статья не найдена
+
+    patch:
+      tags:
+        - Article
+      summary: Обновление статьи по ID
+      description: Обновление статьи по ID
+      operationId: updateArticle
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleRequest'
+      responses:
+        '200':
+          description: Статья успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleFullResponse'
+        '404':
+          description: Статья не найдена
+
+    delete:
+      tags:
+        - Article
+      summary: Удаление статьи по ID
+      description: Удаление статьи по ID
+      operationId: deleteArticle
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Статья успешно удалена
+        '404':
+          description: Статья не найдена
+
+  /api/v1/main_service/articles/{id}/moderation_passed:
+    patch:
+      tags:
+        - Article
+      summary: Обновление статуса модерации статьи
+      description: Обновление статуса модерации статьи
+      operationId: updateArticleModerationPassed
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleFullResponse'
+      responses:
+        '200':
+          description: Статус модерации успешно обновлен
+        '404':
+          description: Статья не найдена
+
+  /api/v1/main_service/articles/categories:
+    get:
+      tags:
+        - ArticleCategory
+      summary: Получение всех категорий статей
+      description: Возвращает список всех категорий статей
+      operationId: getArticleCategories
+      responses:
+        '200':
+          description: Список категорий статей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArticleCategorySummaryResponse'
+    post:
+      tags:
+        - ArticleCategory
+      summary: Создание категории статьи
+      description: Создание новой категории статьи
+      operationId: createArticleCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleCategoryRequest'
+      responses:
+        '201':
+          description: Категория статьи успешно создана
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ArticleCategoryFullResponse'
+
+  /api/v1/main_service/articles/categories/{id}:
+    get:
+      tags:
+        - ArticleCategory
+      summary: Получение категории статьи по ID
+      description: Получение полной информации о категории статьи по ее ID
+      operationId: getArticleCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Категория статьи найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleCategoryFullResponse'
+        '404':
+          description: Категория статьи не найдена
+          content:
+            text/plain:
+              schema:
+                type: string
+    patch:
+      tags:
+        - ArticleCategory
+      summary: Обновление категории статьи
+      description: Обновление данных категории статьи по ее ID
+      operationId: updateArticleCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleCategoryRequest'
+      responses:
+        '200':
+          description: Категория статьи успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleCategoryFullResponse'
+        '404':
+          description: Категория статьи не найдена
+          content:
+            text/plain:
+              schema:
+                type: string
+    delete:
+      tags:
+        - ArticleCategory
+      summary: Удаление категории статьи
+      description: Удаление категории статьи по ее ID
+      operationId: deleteArticleCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '204':
+          description: Категория статьи успешно удалена
+        '404':
+          description: Категория статьи не найдена
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/main_service/news/categories:
+    get:
+      tags:
+        - NewsCategory
+      summary: Получение всех категорий новостей
+      description: Возвращает список всех категорий новостей
+      operationId: getNewsCategories
+      responses:
+        '200':
+          description: Список категорий новостей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewsCategorySummaryResponse'
+    post:
+      tags:
+        - NewsCategory
+      summary: Создание категории новости
+      description: Создание новой категории новости
+      operationId: createNewsCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsCategoryRequest'
+      responses:
+        '201':
+          description: Категория новости успешно создана
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/NewsCategoryFullResponse'
+
+  /api/v1/main_service/news/categories/{id}:
+    get:
+      tags:
+        - NewsCategory
+      summary: Получение категории новости по ID
+      description: Получение полной информации о категории новости по ее ID
+      operationId: getNewsCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Категория новости найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsCategoryFullResponse'
+        '404':
+          description: Категория новости не найдена
+          content:
+            text/plain:
+              schema:
+                type: string
+    patch:
+      tags:
+        - NewsCategory
+      summary: Обновление категории новости
+      description: Обновление данных категории новости по ее ID
+      operationId: updateNewsCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsCategoryRequest'
+      responses:
+        '200':
+          description: Категория новости успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsCategoryFullResponse'
+        '404':
+          description: Категория новости не найдена
+          content:
+            text/plain:
+              schema:
+                type: string
+    delete:
+      tags:
+        - NewsCategory
+      summary: Удаление категории новости
+      description: Удаление категории новости по ее ID
+      operationId: deleteNewsCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '204':
+          description: Категория новости успешно удалена
+        '404':
+          description: Категория новости не найдена
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/main_service/projects/categories:
+    get:
+      tags:
+        - ProjectCategory
+      summary: Получение всех категорий проектов
+      description: Возвращает список всех категорий проектов
+      operationId: getProjectCategories
+      responses:
+        '200':
+          description: Список категорий проектов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectCategorySummaryResponse'
+    post:
+      tags:
+        - ProjectCategory
+      summary: Создание категории проекта
+      description: Создание новой категории проекта
+      operationId: createProjectCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCategoryRequest'
+      responses:
+        '201':
+          description: Категория проекта успешно создана
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ProjectCategoryFullResponse'
+
+  /api/v1/main_service/projects/categories/{id}:
+    get:
+      tags:
+        - ProjectCategory
+      summary: Получение категории проекта по ID
+      description: Получение полной информации о категории проекта по ее ID
+      operationId: getProjectCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Категория проекта найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectCategoryFullResponse'
+        '404':
+          description: Категория проекта не найдена
+          content:
+            text/plain:
+              schema:
+                type: string
+    patch:
+      tags:
+        - ProjectCategory
+      summary: Обновление категории проекта
+      description: Обновление данных категории проекта по ее ID
+      operationId: updateProjectCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCategoryRequest'
+      responses:
+        '200':
+          description: Категория проекта успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectCategoryFullResponse'
+        '404':
+          description: Категория проекта не найдена
+          content:
+            text/plain:
+              schema:
+                type: string
+    delete:
+      tags:
+        - ProjectCategory
+      summary: Удаление категории проекта
+      description: Удаление категории проекта по ее ID
+      operationId: deleteProjectCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '204':
+          description: Категория проекта успешно удалена
+        '404':
+          description: Категория проекта не найдена
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/main_service/news:
+    post:
+      tags:
+        - News
+      summary: Создание новости
+      description: Создание новости
+      operationId: createNews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsRequest'
+      responses:
+        '201':
+          description: Новость успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsFullResponse'
+    get:
+      tags:
+        - News
+      summary: Получение новостей с пагинацией
+      description: Получение новостей с пагинацией
+      operationId: getNews
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Фильтр по категории
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Поисковый запрос
+        - name: moderationPassed
+          in: query
+          schema:
+            type: boolean
+          description: Фильтр по статусу модерации
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Страница новостей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsPageResponse'
+
+  /api/v1/main_service/news/me:
+    get:
+      tags:
+        - News
+      summary: Получение новостей созданных текущим пользователем с пагинацией
+      description: Получение новостей созданных текущим пользователем с пагинацией
+      operationId: getMyNews
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Фильтр по категории
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Поисковый запрос
+        - name: moderationPassed
+          in: query
+          schema:
+            type: boolean
+          description: Фильтр по статусу модерации
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Страница новостей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsPageResponse'
+
+  /api/v1/main_service/news/{id}:
+    get:
+      tags:
+        - News
+      summary: Получение новости
+      description: Получение новости
+      operationId: getNewsById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Полная новость
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsFullResponse'
+    patch:
+      tags:
+        - News
+      summary: Обновление новости
+      description: Обновление новости
+      operationId: updateNews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsRequest'
+      responses:
+        '200':
+          description: Новость обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsFullResponse'
+    delete:
+      tags:
+        - News
+      summary: Удаление новости
+      description: Удаление новости
+      operationId: deleteNews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Новость удалена
+
+  /api/v1/main_service/news/{id}/moderation_passed:
+    patch:
+      tags:
+        - News
+      summary: Обновление статуса модерации новости
+      description: Обновление статуса модерации новости
+      operationId: updateNewsModerationPassed
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: boolean
+              example: true
+      responses:
+        '200':
+          description: Статус модерации обновлён
+
+components:
+  schemas:
+
+    NewsPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/NewsSummaryResponse'
+
+    ArticlePageResponse:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/ArticleSummaryResponse'
+
+    ProjectPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProjectSummaryResponse'
+
+    NewsRequest:
+      type: object
+      description: Запрос на создание или обновление новости
+      properties:
+        title:
+          type: string
+          description: Заголовок новости
+        previewUrl:
+          type: string
+          format: uri
+          description: URL превью новости
+        categoryId:
+          type: integer
+          format: int64
+          description: Категория новости
+        content:
+          type: string
+          description: Полное содержимое новости
+      required:
+        - title
+        - content
+
+    NewsFullResponse:
+      type: object
+      description: Полный ответ по новости
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор новости
+        title:
+          type: string
+          description: Заголовок новости
+        owner:
+          type: string
+          description: Автор новости
+        previewUrl:
+          type: string
+          format: uri
+          description: URL превью новости
+        category:
+          type: string
+          description: Категория новости
+        content:
+          type: string
+          description: Полное содержимое новости
+        publicationDate:
+          type: string
+          format: date
+          description: Дата публикации новости
+        moderationPassed:
+          type: boolean
+          description: Флаг, прошла ли новость модерацию
+      required:
+        - id
+        - title
+        - owner
+        - content
+        - publicationDate
+        - moderationPassed
+
+    NewsSummaryResponse:
+      type: object
+      description: Краткая информация о новости
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор новости
+        title:
+          type: string
+          description: Заголовок новости
+        owner:
+          type: string
+          description: Автор новости
+        previewUrl:
+          type: string
+          format: uri
+          description: URL превью новости
+        category:
+          type: string
+          description: Категория новости
+      required:
+        - id
+        - title
+        - owner
+
+    ArticleRequest:
+      type: object
+      description: Запрос на создание или обновление статьи
+      properties:
+        title:
+          type: string
+          description: Заголовок статьи
+        previewUrl:
+          type: string
+          format: uri
+          description: URL превью статьи
+        categoryId:
+          type: integer
+          format: int64
+          description: Категория статьи
+        content:
+          type: string
+          description: Полное содержимое статьи
+      required:
+        - title
+        - content
+
+    ArticleFullResponse:
+      type: object
+      description: Полный ответ по статье
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор статьи
+        title:
+          type: string
+          description: Заголовок статьи
+        owner:
+          type: string
+          description: Владелец/автор статьи
+        previewUrl:
+          type: string
+          format: uri
+          description: URL превью статьи
+        category:
+          type: string
+          description: Категория статьи
+        content:
+          type: string
+          description: Полное содержимое статьи
+        publicationDate:
+          type: string
+          format: date
+          description: Дата публикации статьи
+        moderationPassed:
+          type: boolean
+          description: Флаг, прошла ли статья модерацию
+      required:
+        - id
+        - title
+        - owner
+        - previewUrl
+        - category
+        - content
+        - publicationDate
+        - moderationPassed
+
+    ArticleSummaryResponse:
+      type: object
+      description: Краткая информация о статье
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор статьи
+        title:
+          type: string
+          description: Заголовок статьи
+        owner:
+          type: string
+          description: Владелец/автор статьи
+        previewUrl:
+          type: string
+          format: uri
+          description: URL превью статьи
+        category:
+          type: string
+          description: Категория статьи
+      required:
+        - id
+        - title
+        - owner
+        - previewUrl
+        - category
+
+    ArticleCategoryRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Technology
+
+    ArticleCategorySummaryResponse:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Technology
+
+    ArticleCategoryFullResponse:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Technology
+
+    NewsCategoryRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Technology
+
+    NewsCategorySummaryResponse:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Technology
+
+    NewsCategoryFullResponse:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Technology
+
+    ProjectCategoryRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Technology
+
+    ProjectCategorySummaryResponse:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Technology
+
+    ProjectCategoryFullResponse:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Technology
+
+    CommentRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          description: Текст комментария
+          minLength: 1
+          example: "test"
+
+    Page:
+      type: object
+      required:
+        - content
+        - number
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        content:
+          type: array
+          description: Массив элементов текущей страницы
+          items: { }
+        number:
+          type: integer
+          example: 1
+        size:
+          type: integer
+          example: 1
+        totalElements:
+          type: integer
+          format: int64
+          example: 1
+        totalPages:
+          type: integer
+          example: 1
+
+    UserFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор пользователя
+          example: 42
+        username:
+          type: string
+          description: Имя пользователя
+          example: "Andrey"
+
+    ProjectMemberFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор участника проекта
+          example: 15
+        username:
+          type: string
+          description: Имя пользователя
+          example: "User12345"
+        role:
+          type: string
+          description: Роль пользователя в проекте
+          example: "DevOps"
+
+    CommentFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор комментария
+          example: 1001
+        owner:
+          $ref: '#/components/schemas/UserFullResponse'
+        text:
+          type: string
+          description: Текст комментария
+          example: "User12345"
+        createdDate:
+          type: string
+          format: date-time
+          description: Дата и время создания комментария (UTC)
+          example: "2026-01-24T14:32:10"
+
+    ProjectMemberRequest:
+      type: object
+      required:
+        - username
+        - role
+      properties:
+        username:
+          type: string
+          description: Имя пользователя
+          minLength: 1
+          example: "User12345"
+        role:
+          type: string
+          description: Роль пользователя в проекте
+          minLength: 1
+          example: "DevOps"
+
+    ProjectFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор проекта
+          example: 101
+        projectOwner:
+          $ref: '#/components/schemas/UserFullResponse'
+        members:
+          type: array
+          description: Участники проекта
+          items:
+            $ref: '#/components/schemas/ProjectMemberFullResponse'
+        projectName:
+          type: string
+          description: Название проекта
+          example: "Open Source Platform"
+        projectDescription:
+          type: string
+          description: Описание проекта
+          example: "Платформа для совместной разработки open-source проектов"
+        projectLogoUrl:
+          type: string
+          format: uri
+          description: URL логотипа проекта
+          example: "https://cdn.example.com/logos/project.png"
+        category:
+          type: string
+          description: Категория проекта
+          example: "Technology"
+        likes:
+          type: integer
+          format: int64
+          description: Количество лайков проекта
+          example: 245
+        hasSurvey:
+          type: boolean
+          description: Наличие опроса в проекте
+          example: true
+        comments:
+          type: array
+          description: Комментарии к проекту
+          items:
+            $ref: '#/components/schemas/CommentFullResponse'
+
+    ProjectSummaryResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор проекта
+          example: 101
+        projectOwner:
+          type: string
+          description: Имя пользователя
+          example: "User12345"
+        projectName:
+          type: string
+          description: Название проекта
+          example: "Open Source Platform"
+        projectLogoUrl:
+          type: string
+          format: uri
+          description: URL логотипа проекта
+          example: "https://cdn.example.com/logos/project.png"
+        category:
+          type: string
+          description: Категория проекта
+          example: "Technology"
+        likes:
+          type: integer
+          format: int64
+          description: Количество лайков проекта
+          example: 245
+
+    ProjectRequest:
+      type: object
+      required:
+        - projectName
+        - projectDescription
+        - projectCategoryId
+      properties:
+        members:
+          type: array
+          description: Участники проекта
+          items:
+            $ref: '#/components/schemas/ProjectMemberRequest'
+        projectName:
+          type: string
+          description: Название проекта
+          minLength: 1
+          example: "Open Source Platform"
+        projectDescription:
+          type: string
+          description: Описание проекта
+          minLength: 1
+          example: "Платформа для совместной разработки open-source проектов"
+        projectLogoUrl:
+          type: string
+          format: uri
+          description: URL логотипа проекта
+          example: "https://cdn.example.com/logos/project.png"
+        projectCategoryId:
+          type: integer
+          format: int64
+          description: Идентификатор категории проекта
+          example: 3
+
+    ProjectSurveyRequest:
+      type: object
+      required:
+        - questions
+      properties:
+        questions:
+          type: array
+          description: Список вопросов опроса проекта
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ProjectSurveyQuestionRequest'
+
+    ProjectSurveyQuestionRequest:
+      type: object
+      required:
+        - questionText
+      properties:
+        questionText:
+          type: string
+          description: Текст вопроса
+          minLength: 1
+          example: "Какую функциональность вы хотели бы видеть в следующей версии?"
+
+    SurveySubmissionRequest:
+      type: object
+      required:
+        - answers
+      properties:
+        answers:
+          type: array
+          description: Список ответов пользователя на вопросы опроса
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/SurveyAnswerRequest'
+
+    SurveyAnswerRequest:
+      type: object
+      required:
+        - questionId
+        - answerText
+      properties:
+        questionId:
+          type: integer
+          format: int64
+          description: Идентификатор вопроса опроса
+          example: 12
+        answerText:
+          type: string
+          description: Текст ответа пользователя
+          minLength: 1
+          example: "Хотелось бы видеть мобильное приложение"
+
+    ProjectSurveyFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор опроса
+          example: 25
+        projectId:
+          type: integer
+          format: int64
+          description: Идентификатор проекта
+          example: 101
+        questions:
+          type: array
+          description: Список вопросов опроса
+          items:
+            $ref: '#/components/schemas/SurveyQuestionFullResponse'
+
+    SurveySubmissionFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор отправки ответов
+          example: 55
+        surveyId:
+          type: integer
+          format: int64
+          description: Идентификатор опроса
+          example: 10
+        respondentUsername:
+          type: string
+          description: Username пользователя, прошедшего опрос
+          example: "User12345"
+        answers:
+          type: array
+          description: Ответы пользователя на вопросы опроса
+          items:
+            $ref: '#/components/schemas/SurveyAnswerFullResponse'
+        averageRating:
+          type: integer
+          description: Средняя оценка по опросу (если применимо)
+          example: 4
+
+    SurveyQuestionFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор вопроса
+          example: 1
+        questionText:
+          type: string
+          description: Текст вопроса
+          example: "Насколько вам интересен этот проект?"
+
+    SurveyAnswerFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор ответа
+          example: 25
+        questionText:
+          type: string
+          description: Текст вопроса, на который дан ответ
+          example: "Насколько вам интересен этот проект?"
+        answerText:
+          type: string
+          description: Текст ответа пользователя
+          example: "Очень интересен"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

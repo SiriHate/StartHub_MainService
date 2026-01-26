@@ -1,7 +1,7 @@
 package org.siri_hate.main_service.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.siri_hate.main_service.model.entity.project.Project;
 
 import java.time.LocalDateTime;
 
@@ -18,18 +18,24 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
-    @JsonIgnore
     private Project project;
 
-    @Column(name = "created_date", nullable = false)
-    private LocalDateTime createdDate;
+    @Column(name = "created_at", nullable = false)
+    private final LocalDateTime createdAt;
 
     public Comment() {
-        this.createdDate = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public Comment(User author, Project project, String text) {
+        this.author = author;
+        this.text = text;
+        this.project = project;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -48,12 +54,12 @@ public class Comment {
         this.text = text;
     }
 
-    public User getUser() {
-        return user;
+    public User getAuthor() {
+        return author;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public Project getProject() {
@@ -64,11 +70,7 @@ public class Comment {
         this.project = project;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }

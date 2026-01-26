@@ -1,8 +1,8 @@
 package org.siri_hate.main_service.repository.adapters;
 
 import jakarta.persistence.criteria.Join;
-import org.siri_hate.main_service.model.entity.Project;
-import org.siri_hate.main_service.model.entity.category.ProjectCategory;
+import org.siri_hate.main_service.model.entity.project.Project;
+import org.siri_hate.main_service.model.entity.project.ProjectCategory;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ProjectSpecification {
@@ -24,5 +24,13 @@ public class ProjectSpecification {
             Join<Project, ProjectCategory> categoryJoin = root.join("category");
             return criteriaBuilder.equal(categoryJoin.get("name"), category);
         };
+    }
+
+    public static Specification<Project> moderationPassed(Boolean moderationPassed) {
+        if (moderationPassed == null) {
+            return null;
+        }
+        return (root, query, cb) ->
+                cb.equal(root.get("moderationPassed"), moderationPassed);
     }
 }

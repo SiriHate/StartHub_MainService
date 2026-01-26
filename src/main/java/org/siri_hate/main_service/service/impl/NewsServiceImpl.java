@@ -1,26 +1,22 @@
 package org.siri_hate.main_service.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.siri_hate.main_service.model.dto.mapper.NewsMapper;
-import org.siri_hate.main_service.model.dto.request.news.NewsFullRequest;
-import org.siri_hate.main_service.model.dto.response.news.NewsFullResponse;
-import org.siri_hate.main_service.model.dto.response.news.NewsSummaryResponse;
-import org.siri_hate.main_service.model.entity.News;
+import org.siri_hate.main_service.dto.NewsFullResponseDTO;
+import org.siri_hate.main_service.dto.NewsPageResponseDTO;
+import org.siri_hate.main_service.dto.NewsRequestDTO;
+import org.siri_hate.main_service.model.mapper.NewsMapper;
+import org.siri_hate.main_service.model.entity.news.News;
 import org.siri_hate.main_service.repository.NewsRepository;
 import org.siri_hate.main_service.repository.adapters.NewsSpecification;
 import org.siri_hate.main_service.service.NewsCategoryService;
 import org.siri_hate.main_service.service.NewsService;
 import org.siri_hate.main_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class NewsServiceImpl implements NewsService {
@@ -35,7 +31,9 @@ public class NewsServiceImpl implements NewsService {
             NewsRepository newsRepository,
             NewsMapper newsMapper,
             NewsCategoryService newsCategoryService,
-            @Lazy UserService userService) {
+            UserService userService
+    )
+    {
         this.newsRepository = newsRepository;
         this.newsMapper = newsMapper;
         this.newsCategoryService = newsCategoryService;
@@ -44,119 +42,68 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public void createNews(String username, NewsFullRequest news) {
-        News newsEntity = newsMapper.toNews(news);
-        newsEntity.setUser(userService.findOrCreateUser(username));
-        newsEntity.setPublicationDate(LocalDate.now());
-        newsEntity.setCategory(
-                newsCategoryService.getNewsCategoryEntityById(news.getCategory().getId()));
-        newsEntity.setModerationPassed(false);
-        newsRepository.save(newsEntity);
+    public NewsFullResponseDTO createNews(String username, NewsRequestDTO request) {
+        News news = newsMapper.toNews(request);
+        news.setAuthor(userService.findOrCreateUser(username));
+        news.setCategory(newsCategoryService.getNewsCategoryEntityById(news.getCategory().getId()));
+        news.setModerationPassed(false);
+        newsRepository.save(news);
+        return newsMapper.toNewsFullResponse(news);
     }
 
     @Override
-    public NewsFullResponse getNewsById(Long id) {
-        Optional<News> news = newsRepository.findById(id);
+    public NewsFullResponseDTO getNewsById(Long id) {
+        News news = newsRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return newsMapper.toNewsFullResponse(news);
+    }
+
+    @Override
+    public NewsPageResponseDTO getNews(String category, String query, int page, int size, boolean isModerationPassed) {
+        Specification<News> spec = Specification.allOf(
+                NewsSpecification.titleStartsWith(query),
+                NewsSpecification.hasCategory(category),
+                NewsSpecification.moderationPassed(isModerationPassed)
+        );
+        Page<News> news = newsRepository.findAll(spec, PageRequest.of(page, size));
         if (news.isEmpty()) {
-            throw new NoSuchElementException("News not found");
+            throw new EntityNotFoundException();
         }
-        return newsMapper.toNewsFullResponse(news.get());
+        return newsMapper.toNewsPageResponse(news);
     }
 
     @Override
-    public Page<NewsSummaryResponse> getNewsByCategoryAndSearchQuery(
-            String category, String query, Pageable pageable) {
-        Specification<News> spec =
+    public NewsPageResponseDTO getNews(String username, String query, int page, int size) {
+        Specification<News> spec = Specification.allOf(
+                NewsSpecification.hasUserUsername(username),
                 NewsSpecification.titleStartsWith(query)
-                        .and(NewsSpecification.hasCategory(category));
-        Page<News> news = newsRepository.findAll(spec, pageable);
+        );
+        Page<News> news = newsRepository.findAll(spec, PageRequest.of(page, size));
         if (news.isEmpty()) {
-            throw new RuntimeException("No news found");
+            throw new EntityNotFoundException();
         }
-        return newsMapper.toNewsSummaryResponsePage(news);
+        return newsMapper.toNewsPageResponse(news);
     }
 
     @Override
     @Transactional
-    public Page<NewsSummaryResponse> getModeratedNews(String category, String query,
-                                                      Pageable pageable) {
-        Specification<News> spec = NewsSpecification.titleStartsWith(query)
-                .and(NewsSpecification.hasCategory(category))
-                .and((root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.isTrue(
-                        root.get("moderationPassed")));
-        Page<News> news = newsRepository.findAll(spec, pageable);
-        if (news.isEmpty()) {
-            throw new NoSuchElementException("No moderated news found");
-        }
-        return newsMapper.toNewsSummaryResponsePage(news);
-    }
-
-    @Override
-    @Transactional
-    public Page<NewsSummaryResponse> getUnmoderatedNews(String category, String query,
-                                                        Pageable pageable) {
-        Specification<News> spec = NewsSpecification.titleStartsWith(query)
-                .and(NewsSpecification.hasCategory(category))
-                .and((root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.isFalse(
-                        root.get("moderationPassed")));
-        Page<News> news = newsRepository.findAll(spec, pageable);
-        if (news.isEmpty()) {
-            throw new NoSuchElementException("No unmoderated news found");
-        }
-        return newsMapper.toNewsSummaryResponsePage(news);
-    }
-
-    @Override
-    public Page<NewsSummaryResponse> getNewsByUser(String username, String query, Pageable pageable) {
-        Specification<News> spec =
-                (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.conjunction();
-
-        if (query != null && !query.trim().isEmpty()) {
-            spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
-                    criteriaBuilder.like(
-                            criteriaBuilder.lower(root.get("title")),
-                            query.toLowerCase() + "%"));
-        }
-
-        spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("user").get("username"), username));
-
-        Page<News> news = newsRepository.findAll(spec, pageable);
-        if (news.isEmpty()) {
-            throw new RuntimeException("No news found for user: " + username);
-        }
-        return newsMapper.toNewsSummaryResponsePage(news);
-    }
-
-    @Override
-    @Transactional
-    public void updateNews(Long id, NewsFullRequest newsFullRequest) {
-        News existingNews =
-                newsRepository
-                        .findById(id)
-                        .orElseThrow(() -> new NoSuchElementException("News with id = " + id + " not found"));
-
-        newsMapper.newsUpdate(newsFullRequest, existingNews);
-        newsRepository.save(existingNews);
+    public NewsFullResponseDTO updateNews(Long id, NewsRequestDTO request) {
+        News news = newsRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        news = newsMapper.newsUpdate(request, news);
+        newsRepository.save(news);
+        return newsMapper.toNewsFullResponse(news);
     }
 
     @Override
     @Transactional
     public void deleteNews(Long id) {
-        Optional<News> news = newsRepository.findById(id);
-        if (news.isEmpty()) {
-            throw new NoSuchElementException("News with id = " + id + " not found");
-        }
-        newsRepository.delete(news.get());
+        News news = newsRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        newsRepository.delete(news);
     }
 
     @Override
     @Transactional
     public void updateNewsModerationStatus(Long id, Boolean moderationPassed) {
-        News news =
-                newsRepository
-                        .findById(id)
-                        .orElseThrow(() -> new NoSuchElementException("News with id = " + id + " not found"));
+        News news = newsRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         news.setModerationPassed(moderationPassed);
         newsRepository.save(news);
     }

@@ -18,19 +18,10 @@ public class SurveyAnswer {
     @JoinColumn(name = "question_id", nullable = false)
     private SurveyQuestion question;
 
-    @Column(name = "response_text", nullable = false)
-    private String responseText;
+    @Column(nullable = false)
+    private String content;
 
-    public SurveyAnswer() {
-    }
-
-    public SurveyAnswer(
-            Long id, SurveySubmission submission, SurveyQuestion question, String responseText) {
-        this.id = id;
-        this.submission = submission;
-        this.question = question;
-        this.responseText = responseText;
-    }
+    public SurveyAnswer() {}
 
     public Long getId() {
         return id;
@@ -56,11 +47,11 @@ public class SurveyAnswer {
         this.question = question;
     }
 
-    public String getResponseText() {
-        return responseText;
+    public String getContent() {
+        return content;
     }
 
-    public void setResponseText(String responseText) {
-        this.responseText = responseText;
+    public void setContent(String content) {
+        this.content = content;
     }
 }

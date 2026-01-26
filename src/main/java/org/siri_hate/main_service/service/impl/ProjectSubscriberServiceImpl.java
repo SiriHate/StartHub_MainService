@@ -1,11 +1,11 @@
 package org.siri_hate.main_service.service.impl;
 
-import org.siri_hate.main_service.model.dto.kafka.ProjectUpdateNotification;
-import org.siri_hate.main_service.model.entity.Project;
-import org.siri_hate.main_service.model.entity.ProjectSubscriber;
+import org.siri_hate.main_service.kafka.message.ProjectUpdateNotification;
+import org.siri_hate.main_service.kafka.producer.ProjectEventProducer;
+import org.siri_hate.main_service.model.entity.project.Project;
+import org.siri_hate.main_service.model.entity.project.ProjectSubscriber;
 import org.siri_hate.main_service.model.entity.User;
 import org.siri_hate.main_service.repository.ProjectSubscriberRepository;
-import org.siri_hate.main_service.service.KafkaService;
 import org.siri_hate.main_service.service.ProjectService;
 import org.siri_hate.main_service.service.ProjectSubscriberService;
 import org.siri_hate.main_service.service.UserService;
@@ -23,18 +23,18 @@ public class ProjectSubscriberServiceImpl implements ProjectSubscriberService {
     private final ProjectSubscriberRepository projectSubscriberRepository;
     private final ProjectService projectService;
     private final UserService userService;
-    private final KafkaService kafkaService;
+    private final ProjectEventProducer projectEventProducer;
 
     @Autowired
     public ProjectSubscriberServiceImpl(
             ProjectSubscriberRepository projectSubscriberRepository,
             @Lazy ProjectService projectService,
             @Lazy UserService userService,
-            KafkaService kafkaService) {
+            ProjectEventProducer projectEventProducer) {
         this.projectSubscriberRepository = projectSubscriberRepository;
         this.projectService = projectService;
         this.userService = userService;
-        this.kafkaService = kafkaService;
+        this.projectEventProducer = projectEventProducer;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ProjectSubscriberServiceImpl implements ProjectSubscriberService {
     public void subscribeToProject(Long projectId, String username) {
         User user = userService.findOrCreateUser(username);
         if (!projectSubscriberRepository.existsByProjectIdAndUserId(projectId, user.getId())) {
-            Project project = projectService.getProjectById(projectId);
+            Project project = projectService.getProjectEntity(projectId);
             ProjectSubscriber subscriber = new ProjectSubscriber(project, user);
             projectSubscriberRepository.save(subscriber);
         }
@@ -65,13 +65,13 @@ public class ProjectSubscriberServiceImpl implements ProjectSubscriberService {
             ProjectUpdateNotification notification =
                     new ProjectUpdateNotification(
                             projectName, updateDate.toString(), projectLink, subscriber.getUser().getUsername());
-            kafkaService.sendProjectUpdateNotification(notification);
+            projectEventProducer.sendProjectUpdateNotification(notification);
         }
     }
 
     @Override
     @Transactional
-    public boolean isUserSubscribed(Long projectId, String username) {
+    public boolean getSubscribeStatus(Long projectId, String username) {
         User user = userService.findOrCreateUser(username);
         return projectSubscriberRepository.existsByProjectIdAndUserId(projectId, user.getId());
     }

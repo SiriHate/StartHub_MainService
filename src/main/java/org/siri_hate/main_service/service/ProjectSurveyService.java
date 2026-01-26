@@ -1,20 +1,20 @@
 package org.siri_hate.main_service.service;
 
-import org.siri_hate.main_service.model.dto.request.survey.ProjectSurveyRequest;
-import org.siri_hate.main_service.model.dto.request.survey.SurveySubmissionRequest;
-import org.siri_hate.main_service.model.dto.response.survey.ProjectSurveyResponse;
-import org.siri_hate.main_service.model.dto.response.survey.SurveySubmissionResponse;
+import org.siri_hate.main_service.dto.ProjectSurveyFullResponseDTO;
+import org.siri_hate.main_service.dto.ProjectSurveyRequestDTO;
+import org.siri_hate.main_service.dto.SurveySubmissionFullResponseDTO;
+import org.siri_hate.main_service.dto.SurveySubmissionRequestDTO;
 
 import java.util.List;
 
 public interface ProjectSurveyService {
-    ProjectSurveyResponse createSurvey(Long projectId, ProjectSurveyRequest request);
+    ProjectSurveyFullResponseDTO createSurvey(Long projectId, ProjectSurveyRequestDTO request);
 
-    ProjectSurveyResponse getSurvey(Long projectId);
+    ProjectSurveyFullResponseDTO getSurvey(Long projectId);
 
     void deleteSurvey(Long projectId);
 
-    SurveySubmissionResponse submitSurveyAnswers(String username, Long projectId, SurveySubmissionRequest request);
+    SurveySubmissionFullResponseDTO submitSurveyAnswers(String username, Long projectId, SurveySubmissionRequestDTO request);
 
-    List<SurveySubmissionResponse> getAllSurveySubmissions(Long projectId, String sort);
+    List<SurveySubmissionFullResponseDTO> getAllSurveySubmissions(Long projectId, String sort);
 }
