@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot") version "3.5.7"
+    id("org.springframework.boot") version "4.0.2"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.openapi.generator") version "7.18.0"
     java
@@ -80,7 +80,8 @@ openApiGenerate {
             "useBeanValidation" to "true",
             "useJakartaEe" to "true",
             "openApiNullable" to "false",
-            "dateLibrary" to "java8"
+            "dateLibrary" to "java8",
+            "useSpringController" to "true"
         )
     )
 }
