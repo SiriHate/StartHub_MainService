@@ -1,21 +1,101 @@
 package org.siri_hate.main_service.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.siri_hate.main_service.dto.NewsFullResponseDTO;
 import org.siri_hate.main_service.dto.NewsPageResponseDTO;
 import org.siri_hate.main_service.dto.NewsRequestDTO;
+import org.siri_hate.main_service.model.mapper.NewsMapper;
+import org.siri_hate.main_service.model.entity.news.News;
+import org.siri_hate.main_service.repository.NewsRepository;
+import org.siri_hate.main_service.repository.adapters.NewsSpecification;
+import org.siri_hate.main_service.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 
-public interface NewsService {
-    NewsFullResponseDTO createNews(String ownerUsername, NewsRequestDTO request);
+@Service
+public class NewsService {
 
-    NewsFullResponseDTO getNewsById(Long id);
+    private final NewsRepository newsRepository;
+    private final NewsMapper newsMapper;
+    private final NewsCategoryService newsCategoryService;
+    private final UserService userService;
 
-    NewsPageResponseDTO getNews(String category, String query, int page, int size, boolean isModerationPassed);
+    @Autowired
+    public NewsService(
+            NewsRepository newsRepository,
+            NewsMapper newsMapper,
+            NewsCategoryService newsCategoryService,
+            UserService userService
+    )
+    {
+        this.newsRepository = newsRepository;
+        this.newsMapper = newsMapper;
+        this.newsCategoryService = newsCategoryService;
+        this.userService = userService;
+    }
 
-    NewsFullResponseDTO updateNews(Long id, NewsRequestDTO request);
+    @Transactional
+    public NewsFullResponseDTO createNews(String username, NewsRequestDTO request) {
+        News news = newsMapper.toNews(request);
+        news.setAuthor(userService.findOrCreateUser(username));
+        news.setCategory(newsCategoryService.getNewsCategoryEntityById(news.getCategory().getId()));
+        news.setModerationPassed(false);
+        newsRepository.save(news);
+        return newsMapper.toNewsFullResponse(news);
+    }
 
-    void deleteNews(Long id);
+    public NewsFullResponseDTO getNewsById(Long id) {
+        News news = newsRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return newsMapper.toNewsFullResponse(news);
+    }
 
-    void updateNewsModerationStatus(Long id, Boolean moderationPassed);
+    public NewsPageResponseDTO getNews(String category, String query, int page, int size, boolean isModerationPassed) {
+        Specification<News> spec = Specification.allOf(
+                NewsSpecification.titleStartsWith(query),
+                NewsSpecification.hasCategory(category),
+                NewsSpecification.moderationPassed(isModerationPassed)
+        );
+        Page<News> news = newsRepository.findAll(spec, PageRequest.of(page, size));
+        if (news.isEmpty()) {
+            throw new EntityNotFoundException();
+        }
+        return newsMapper.toNewsPageResponse(news);
+    }
 
-    NewsPageResponseDTO getNews(String username, String query, int page, int size);
+    public NewsPageResponseDTO getNews(String username, String query, int page, int size) {
+        Specification<News> spec = Specification.allOf(
+                NewsSpecification.hasUserUsername(username),
+                NewsSpecification.titleStartsWith(query)
+        );
+        Page<News> news = newsRepository.findAll(spec, PageRequest.of(page, size));
+        if (news.isEmpty()) {
+            throw new EntityNotFoundException();
+        }
+        return newsMapper.toNewsPageResponse(news);
+    }
+
+    @Transactional
+    public NewsFullResponseDTO updateNews(Long id, NewsRequestDTO request) {
+        News news = newsRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        news = newsMapper.newsUpdate(request, news);
+        newsRepository.save(news);
+        return newsMapper.toNewsFullResponse(news);
+    }
+
+    @Transactional
+    public void deleteNews(Long id) {
+        News news = newsRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        newsRepository.delete(news);
+    }
+
+    @Transactional
+    public void updateNewsModerationStatus(Long id, Boolean moderationPassed) {
+        News news = newsRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        news.setModerationPassed(moderationPassed);
+        newsRepository.save(news);
+    }
 }
