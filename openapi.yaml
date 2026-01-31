@@ -275,11 +275,7 @@ paths:
       description: Создает новый проект. Использует имя пользователя из контекста безопасности.
       operationId: createProject
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProjectRequest'
+        $ref: '#/components/requestBodies/ProjectRequestWithImage'
       responses:
         '201':
           description: Проект успешно создан
@@ -368,11 +364,7 @@ paths:
             type: integer
             format: int64
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProjectRequest'
+        $ref: '#/components/requestBodies/ProjectRequestWithImage'
       responses:
         '200':
           description: Информация о проекте
@@ -480,11 +472,7 @@ paths:
       description: Создает новую статью от имени текущего пользователя
       operationId: createArticle
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ArticleRequest'
+        $ref: '#/components/requestBodies/ArticleRequestWithImage'
       responses:
         '201':
           description: Статья была успешно создана
@@ -636,11 +624,7 @@ paths:
             type: integer
             format: int64
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ArticleRequest'
+        $ref: '#/components/requestBodies/ArticleRequestWithImage'
       responses:
         '200':
           description: Статья успешно обновлена
@@ -650,7 +634,6 @@ paths:
                 $ref: '#/components/schemas/ArticleFullResponse'
         '404':
           description: Статья не найдена
-
     delete:
       tags:
         - Article
@@ -696,7 +679,7 @@ paths:
         '404':
           description: Статья не найдена
 
-  /api/v1/main_service/articles/categories:
+  /api/v1/main_service/article-categories:
     get:
       tags:
         - ArticleCategory
@@ -732,7 +715,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ArticleCategoryFullResponse'
 
-  /api/v1/main_service/articles/categories/{id}:
+  /api/v1/main_service/article-categories/{id}:
     get:
       tags:
         - ArticleCategory
@@ -817,7 +800,7 @@ paths:
               schema:
                 type: string
 
-  /api/v1/main_service/news/categories:
+  /api/v1/main_service/news-categories:
     get:
       tags:
         - NewsCategory
@@ -853,7 +836,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/NewsCategoryFullResponse'
 
-  /api/v1/main_service/news/categories/{id}:
+  /api/v1/main_service/news-categories/{id}:
     get:
       tags:
         - NewsCategory
@@ -938,7 +921,7 @@ paths:
               schema:
                 type: string
 
-  /api/v1/main_service/projects/categories:
+  /api/v1/main_service/project-categories:
     get:
       tags:
         - ProjectCategory
@@ -974,7 +957,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProjectCategoryFullResponse'
 
-  /api/v1/main_service/projects/categories/{id}:
+  /api/v1/main_service/project-categories/{id}:
     get:
       tags:
         - ProjectCategory
@@ -1067,11 +1050,7 @@ paths:
       description: Создание новости
       operationId: createNews
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NewsRequest'
+        $ref: '#/components/requestBodies/NewsRequestWithImage'
       responses:
         '201':
           description: Новость успешно создана
@@ -1195,11 +1174,7 @@ paths:
             type: integer
             format: int64
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NewsRequest'
+        $ref: '#/components/requestBodies/NewsRequestWithImage'
       responses:
         '200':
           description: Новость обновлена
@@ -1289,10 +1264,6 @@ components:
         title:
           type: string
           description: Заголовок новости
-        previewUrl:
-          type: string
-          format: uri
-          description: URL превью новости
         categoryId:
           type: integer
           format: int64
@@ -1376,10 +1347,8 @@ components:
         title:
           type: string
           description: Заголовок статьи
-        previewUrl:
-          type: string
-          format: uri
-          description: URL превью статьи
+        logo:
+          $ref: '#/components/schemas/ImageRequest'
         categoryId:
           type: integer
           format: int64
@@ -1776,11 +1745,6 @@ components:
           description: Описание проекта
           minLength: 1
           example: "Платформа для совместной разработки open-source проектов"
-        projectLogoUrl:
-          type: string
-          format: uri
-          description: URL логотипа проекта
-          example: "https://cdn.example.com/logos/project.png"
         projectCategoryId:
           type: integer
           format: int64
@@ -1914,6 +1878,49 @@ components:
           type: string
           description: Текст ответа пользователя
           example: "Очень интересен"
+
+    ImageRequest:
+      type: string
+      format: binary
+
+  requestBodies:
+    ArticleRequestWithImage:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              article:
+                $ref: '#/components/schemas/ArticleRequest'
+              logo:
+                $ref: '#/components/schemas/ImageRequest'
+    NewsRequestWithImage:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - news
+            properties:
+              news:
+                $ref: '#/components/schemas/NewsRequest'
+              logo:
+                $ref: '#/components/schemas/ImageRequest'
+    ProjectRequestWithImage:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - project
+            properties:
+              project:
+                $ref: '#/components/schemas/ProjectRequest'
+              logo:
+                $ref: '#/components/schemas/ImageRequest'
 
   securitySchemes:
     bearerAuth:

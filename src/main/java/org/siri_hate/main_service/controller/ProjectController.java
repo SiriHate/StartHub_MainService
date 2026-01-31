@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class ProjectController implements ProjectApi {
@@ -23,10 +24,10 @@ public class ProjectController implements ProjectApi {
     }
 
     @Override
-    public ResponseEntity<ProjectFullResponseDTO> createProject(ProjectRequestDTO projectRequestDTO) {
+    public ResponseEntity<ProjectFullResponseDTO> createProject(ProjectRequestDTO project, MultipartFile logo) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String ownerUsername = authentication.getName();
-        var response = projectService.createProject(ownerUsername, projectRequestDTO);
+        var response = projectService.createProject(ownerUsername, project, logo);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -63,8 +64,8 @@ public class ProjectController implements ProjectApi {
     }
 
     @Override
-    public ResponseEntity<ProjectFullResponseDTO> updateProject(Long id, ProjectRequestDTO projectRequestDTO) {
-        var response = projectService.updateProject(id, projectRequestDTO);
+    public ResponseEntity<ProjectFullResponseDTO> updateProject(Long id, ProjectRequestDTO project, MultipartFile logo) {
+        var response = projectService.updateProject(id, project, logo);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

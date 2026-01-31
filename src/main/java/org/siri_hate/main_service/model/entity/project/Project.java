@@ -31,8 +31,8 @@ public class Project {
 
     private String description;
 
-    @Column(name = "logo_url")
-    private String logoUrl;
+    @Column(name = "image_key")
+    private String imageKey;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
@@ -95,12 +95,12 @@ public class Project {
         this.description = description;
     }
 
-    public String getLogoUrl() {
-        return logoUrl;
+    public String getImageKey() {
+        return imageKey;
     }
 
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
+    public void setImageKey(String imageKey) {
+        this.imageKey = imageKey;
     }
 
     public ProjectCategory getCategory() {

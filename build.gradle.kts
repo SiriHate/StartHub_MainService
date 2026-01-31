@@ -19,6 +19,7 @@ repositories {
     mavenCentral()
 }
 
+val awsSdkVersion = "2.37.3"
 val mapstructVersion = "1.5.5.Final"
 val jjwtVersion = "0.11.5"
 val logstashEncoderVersion = "8.1"
@@ -26,6 +27,7 @@ val logbackVersion = "1.5.20"
 val lombokVersion = "1.18.42"
 
 dependencies {
+    implementation("software.amazon.awssdk:s3:${awsSdkVersion}")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -81,7 +83,7 @@ openApiGenerate {
             "useJakartaEe" to "true",
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
-            "useSpringController" to "true"
+            "useSpringController" to "true",
         )
     )
 }

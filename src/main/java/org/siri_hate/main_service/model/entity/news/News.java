@@ -20,8 +20,8 @@ public class News {
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
-    @Column(name = "logo_url")
-    private String logoUrl;
+    @Column(name = "image_key")
+    private String imageKey;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
@@ -65,12 +65,12 @@ public class News {
         this.author = author;
     }
 
-    public String getLogoUrl() {
-        return logoUrl;
+    public String getImageKey() {
+        return imageKey;
     }
 
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
+    public void setImageKey(String imageKey) {
+        this.imageKey = imageKey;
     }
 
     public NewsCategory getCategory() {

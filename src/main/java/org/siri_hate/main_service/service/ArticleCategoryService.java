@@ -35,7 +35,7 @@ public class ArticleCategoryService {
     public List<ArticleCategorySummaryResponseDTO> getArticleCategories() {
         List<ArticleCategory> articleCategories = articleCategoryRepository.findAll();
         if (articleCategories.isEmpty()) {
-            throw new EntityNotFoundException("No article categories found!");
+            throw new EntityNotFoundException();
         }
         return articleCategoryMapper.toArticleCategorySummaryResponseList(articleCategories);
     }

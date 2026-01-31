@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class ArticlesController implements ArticleApi {
@@ -23,10 +24,10 @@ public class ArticlesController implements ArticleApi {
     }
 
     @Override
-    public ResponseEntity<ArticleFullResponseDTO> createArticle(ArticleRequestDTO articleRequestDTO) {
+    public ResponseEntity<ArticleFullResponseDTO> createArticle(ArticleRequestDTO article, MultipartFile logo) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        var response = articleService.createArticle(username, articleRequestDTO);
+        var response = articleService.createArticle(username, article, logo);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -57,8 +58,8 @@ public class ArticlesController implements ArticleApi {
     }
 
     @Override
-    public ResponseEntity<ArticleFullResponseDTO> updateArticle(Long id, ArticleRequestDTO articleRequestDTO) {
-        var response = articleService.updateArticle(id, articleRequestDTO);
+    public ResponseEntity<ArticleFullResponseDTO> updateArticle(Long id, ArticleRequestDTO article, MultipartFile logo) {
+        var response = articleService.updateArticle(id, article, logo);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

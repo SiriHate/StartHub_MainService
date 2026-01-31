@@ -9,12 +9,12 @@ import org.siri_hate.main_service.model.mapper.ArticleMapper;
 import org.siri_hate.main_service.model.entity.article.Article;
 import org.siri_hate.main_service.repository.ArticleRepository;
 import org.siri_hate.main_service.repository.adapters.ArticleSpecification;
-import org.siri_hate.main_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ArticleService {
@@ -23,26 +23,31 @@ public class ArticleService {
     private final ArticleCategoryService articleCategoryService;
     private final ArticleMapper articleMapper;
     private final UserService userService;
+    private final FileService fileService;
 
     @Autowired
     public ArticleService(
             ArticleRepository articleRepository,
             ArticleMapper articleMapper,
             ArticleCategoryService articleCategoryService,
-            UserService userService
+            UserService userService,
+            FileService fileService
     )
     {
         this.articleRepository = articleRepository;
         this.articleMapper = articleMapper;
         this.articleCategoryService = articleCategoryService;
         this.userService = userService;
+        this.fileService = fileService;
     }
 
     @Transactional
-    public ArticleFullResponseDTO createArticle(String username, ArticleRequestDTO request) {
+    public ArticleFullResponseDTO createArticle(String username, ArticleRequestDTO request, MultipartFile logo) {
         Article article = articleMapper.toArticle(request);
         article.setAuthor(userService.findOrCreateUser(username));
         article.setCategory(articleCategoryService.getArticleCategoryEntityById(article.getCategory().getId()));
+        String imageKey = fileService.uploadArticleLogo(logo);
+        article.setImageKey(imageKey);
         articleRepository.save(article);
         return articleMapper.toArticleFullResponseDTO(article);
     }
@@ -79,9 +84,11 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleFullResponseDTO updateArticle(Long id, ArticleRequestDTO request) {
+    public ArticleFullResponseDTO updateArticle(Long id, ArticleRequestDTO request, MultipartFile logo) {
         Article article = articleRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         article = articleMapper.articleUpdate(request, article);
+        String imageKey = fileService.uploadArticleLogo(logo);
+        article.setImageKey(imageKey);
         articleRepository.save(article);
         return articleMapper.toArticleFullResponseDTO(article);
     }

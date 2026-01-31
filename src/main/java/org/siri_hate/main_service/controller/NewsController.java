@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class NewsController implements NewsApi {
@@ -23,10 +24,10 @@ public class NewsController implements NewsApi {
     }
 
     @Override
-    public ResponseEntity<NewsFullResponseDTO> createNews(NewsRequestDTO newsRequestDTO) {
+    public ResponseEntity<NewsFullResponseDTO> createNews(NewsRequestDTO news, MultipartFile logo) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        var response = newsService.createNews(username, newsRequestDTO);
+        var response = newsService.createNews(username, news, logo);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -57,8 +58,8 @@ public class NewsController implements NewsApi {
     }
 
     @Override
-    public ResponseEntity<NewsFullResponseDTO> updateNews(Long id, NewsRequestDTO newsRequestDTO) {
-        var response = newsService.updateNews(id, newsRequestDTO);
+    public ResponseEntity<NewsFullResponseDTO> updateNews(Long id, NewsRequestDTO news, MultipartFile logo) {
+        var response = newsService.updateNews(id, news, logo);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

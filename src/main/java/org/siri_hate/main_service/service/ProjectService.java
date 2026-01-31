@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProjectService {
@@ -26,13 +27,15 @@ public class ProjectService {
     private final ProjectCategoryService projectCategoryService;
     private final UserService userService;
     private final ProjectSubscriberService projectSubscriberService;
+    private final FileService fileService;
 
     @Autowired
     public ProjectService(ProjectRepository projectRepository,
                           ProjectMapper projectMapper,
                           ProjectCategoryService projectCategoryService,
                           UserService userService,
-                          ProjectSubscriberService projectSubscriberService
+                          ProjectSubscriberService projectSubscriberService,
+                          FileService fileService
     )
     {
         this.projectRepository = projectRepository;
@@ -40,13 +43,16 @@ public class ProjectService {
         this.projectCategoryService = projectCategoryService;
         this.userService = userService;
         this.projectSubscriberService = projectSubscriberService;
+        this.fileService = fileService;
     }
 
     @Transactional
-    public ProjectFullResponseDTO createProject(String username, ProjectRequestDTO request) {
+    public ProjectFullResponseDTO createProject(String username, ProjectRequestDTO request, MultipartFile logo) {
         Project project = projectMapper.toProject(request);
         project.setOwner(userService.findOrCreateUser(username));
         project.setCategory(projectCategoryService.getProjectCategoryEntityById(request.getProjectCategoryId()));
+        String imageKey = fileService.uploadProjectLogo(logo);
+        project.setImageKey(imageKey);
         projectRepository.save(project);
         return projectMapper.toProjectFullResponse(project);
     }
@@ -75,9 +81,11 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectFullResponseDTO updateProject(Long id, ProjectRequestDTO request) {
+    public ProjectFullResponseDTO updateProject(Long id, ProjectRequestDTO request, MultipartFile logo) {
         Project project = projectRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         project.setCategory(projectCategoryService.getProjectCategoryEntityById(request.getProjectCategoryId()));
+        String imageKey = fileService.uploadProjectLogo(logo);
+        project.setImageKey(imageKey);
         projectRepository.save(project);
         projectSubscriberService.notifySubscribersAboutUpdate(id, project.getName());
         return projectMapper.toProjectFullResponse(project);

@@ -76,3 +76,12 @@ project:
   update:
     notification:
       topic: project_update_notification_m2s
+
+minio:
+  endpoint: http://localhost:9000
+  region: us-east-1
+  accessKey: minio
+  secretKey: minio12345
+  articles_logo_bucket: articles
+  news_logo_bucket: news
+  projects_logo_bucket: projects
