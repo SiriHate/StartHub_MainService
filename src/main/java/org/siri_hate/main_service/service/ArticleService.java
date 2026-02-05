@@ -8,7 +8,7 @@ import org.siri_hate.main_service.dto.ArticleRequestDTO;
 import org.siri_hate.main_service.model.mapper.ArticleMapper;
 import org.siri_hate.main_service.model.entity.article.Article;
 import org.siri_hate.main_service.repository.ArticleRepository;
-import org.siri_hate.main_service.repository.adapters.ArticleSpecification;
+import org.siri_hate.main_service.repository.specification.ArticleSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +45,7 @@ public class ArticleService {
     public ArticleFullResponseDTO createArticle(String username, ArticleRequestDTO request, MultipartFile logo) {
         Article article = articleMapper.toArticle(request);
         article.setAuthor(userService.findOrCreateUser(username));
-        article.setCategory(articleCategoryService.getArticleCategoryEntityById(article.getCategory().getId()));
+        article.setCategory(articleCategoryService.getArticleCategoryEntityById(request.getCategoryId()));
         String imageKey = fileService.uploadArticleLogo(logo);
         article.setImageKey(imageKey);
         articleRepository.save(article);
@@ -100,9 +100,9 @@ public class ArticleService {
     }
 
     @Transactional
-    public void updateArticleModerationStatus(Long id, Boolean moderationPassed) {
+    public void updateArticleModerationStatus(Long id, Boolean isModerationPassed) {
         Article article = articleRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        article.setModerationPassed(moderationPassed);
+        article.setModerationPassed(isModerationPassed);
         articleRepository.save(article);
     }
 }

@@ -9,9 +9,7 @@ import org.siri_hate.main_service.model.mapper.ProjectMapper;
 import org.siri_hate.main_service.model.entity.project.Project;
 import org.siri_hate.main_service.model.entity.User;
 import org.siri_hate.main_service.repository.ProjectRepository;
-import org.siri_hate.main_service.repository.adapters.ProjectSpecification;
-import org.siri_hate.main_service.service.ProjectSubscriberService;
-import org.siri_hate.main_service.service.UserService;
+import org.siri_hate.main_service.repository.specification.ProjectSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,7 +48,7 @@ public class ProjectService {
     public ProjectFullResponseDTO createProject(String username, ProjectRequestDTO request, MultipartFile logo) {
         Project project = projectMapper.toProject(request);
         project.setOwner(userService.findOrCreateUser(username));
-        project.setCategory(projectCategoryService.getProjectCategoryEntityById(request.getProjectCategoryId()));
+        project.setCategory(projectCategoryService.getProjectCategoryEntityById(request.getCategoryId()));
         String imageKey = fileService.uploadProjectLogo(logo);
         project.setImageKey(imageKey);
         projectRepository.save(project);
@@ -70,6 +68,10 @@ public class ProjectService {
         return projectMapper.toProjectPageResponse(projects);
     }
 
+    public ProjectPageResponseDTO getMyProjects(String username, String query, String userRole, int page, int size) {
+        return null;
+    }
+
     @Transactional
     public ProjectFullResponseDTO getProject(Long id) {
         Project project = projectRepository.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -83,7 +85,7 @@ public class ProjectService {
     @Transactional
     public ProjectFullResponseDTO updateProject(Long id, ProjectRequestDTO request, MultipartFile logo) {
         Project project = projectRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        project.setCategory(projectCategoryService.getProjectCategoryEntityById(request.getProjectCategoryId()));
+        project.setCategory(projectCategoryService.getProjectCategoryEntityById(request.getCategoryId()));
         String imageKey = fileService.uploadProjectLogo(logo);
         project.setImageKey(imageKey);
         projectRepository.save(project);

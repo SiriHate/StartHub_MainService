@@ -327,6 +327,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProjectPageResponse'
 
+  /api/v1/main_service/me/projects:
+    get:
+      tags:
+        - Project
+      summary: Получение списка проектов прользователя
+      description: Возвращает список проектов с поддержкой фильтрации по категории, поисковому запросу и статусу модерации. Поддерживает постраничный вывод.
+      operationId: getMyProjects
+      parameters:
+        - name: role
+          in: query
+          description: Поиск проектов где участник имеет определенную роль
+          schema:
+            type: string
+        - name: query
+          in: query
+          description: Поисковый запрос по названию проекта
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Номер страницы
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          required: true
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: Список проектов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectPageResponse'
+
   /api/v1/main_service/projects/{id}:
     get:
       tags:
@@ -653,7 +693,61 @@ paths:
         '404':
           description: Статья не найдена
 
-  /api/v1/main_service/articles/{id}/moderation_passed:
+  /api/v1/main_service/projects/{id}/moderation-passed:
+    patch:
+      tags:
+        - Project
+      summary: Обновление статуса модерации проекта
+      description: Обновление статуса модерации проекта
+      operationId: updateProjectModerationPassed
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: boolean
+              example: true
+      responses:
+        '200':
+          description: Статус модерации успешно обновлен
+        '404':
+          description: Статья не найдена
+
+  /api/v1/main_service/news/{id}/moderation-passed:
+    patch:
+      tags:
+        - News
+      summary: Обновление статуса модерации новости
+      description: Обновление статуса модерации новости
+      operationId: updateNewsModerationPassed
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: boolean
+              example: true
+      responses:
+        '200':
+          description: Статус модерации успешно обновлен
+        '404':
+          description: Статья не найдена
+
+  /api/v1/main_service/articles/{id}/moderation-passed:
     patch:
       tags:
         - Article
@@ -672,7 +766,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ArticleFullResponse'
+              type: boolean
+              example: true
       responses:
         '200':
           description: Статус модерации успешно обновлен
@@ -1199,31 +1294,6 @@ paths:
         '204':
           description: Новость удалена
 
-  /api/v1/main_service/news/{id}/moderation_passed:
-    patch:
-      tags:
-        - News
-      summary: Обновление статуса модерации новости
-      description: Обновление статуса модерации новости
-      operationId: updateNewsModerationPassed
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: boolean
-              example: true
-      responses:
-        '200':
-          description: Статус модерации обновлён
-
 components:
   schemas:
 
@@ -1289,7 +1359,7 @@ components:
         owner:
           type: string
           description: Автор новости
-        previewUrl:
+        logoUrl:
           type: string
           format: uri
           description: URL превью новости
@@ -1299,7 +1369,7 @@ components:
         content:
           type: string
           description: Полное содержимое новости
-        publicationDate:
+        createdAt:
           type: string
           format: date
           description: Дата публикации новости
@@ -1311,7 +1381,7 @@ components:
         - title
         - owner
         - content
-        - publicationDate
+        - createdAt
         - moderationPassed
 
     NewsSummaryResponse:
@@ -1328,7 +1398,7 @@ components:
         owner:
           type: string
           description: Автор новости
-        previewUrl:
+        logoUrl:
           type: string
           format: uri
           description: URL превью новости
@@ -1374,7 +1444,7 @@ components:
         owner:
           type: string
           description: Владелец/автор статьи
-        previewUrl:
+        logoUrl:
           type: string
           format: uri
           description: URL превью статьи
@@ -1384,7 +1454,7 @@ components:
         content:
           type: string
           description: Полное содержимое статьи
-        publicationDate:
+        createdAt:
           type: string
           format: date
           description: Дата публикации статьи
@@ -1395,10 +1465,10 @@ components:
         - id
         - title
         - owner
-        - previewUrl
+        - logoUrl
         - category
         - content
-        - publicationDate
+        - createdAt
         - moderationPassed
 
     ArticleSummaryResponse:
@@ -1415,7 +1485,7 @@ components:
         owner:
           type: string
           description: Владелец/автор статьи
-        previewUrl:
+        logoUrl:
           type: string
           format: uri
           description: URL превью статьи
@@ -1426,7 +1496,7 @@ components:
         - id
         - title
         - owner
-        - previewUrl
+        - logoUrl
         - category
 
     ArticleCategoryRequest:
@@ -1653,22 +1723,22 @@ components:
           format: int64
           description: Идентификатор проекта
           example: 101
-        projectOwner:
+        owner:
           $ref: '#/components/schemas/UserFullResponse'
         members:
           type: array
           description: Участники проекта
           items:
             $ref: '#/components/schemas/ProjectMemberFullResponse'
-        projectName:
+        name:
           type: string
           description: Название проекта
           example: "Open Source Platform"
-        projectDescription:
+        description:
           type: string
           description: Описание проекта
           example: "Платформа для совместной разработки open-source проектов"
-        projectLogoUrl:
+        logoUrl:
           type: string
           format: uri
           description: URL логотипа проекта
@@ -1700,15 +1770,15 @@ components:
           format: int64
           description: Идентификатор проекта
           example: 101
-        projectOwner:
+        owner:
           type: string
           description: Имя пользователя
           example: "User12345"
-        projectName:
+        name:
           type: string
           description: Название проекта
           example: "Open Source Platform"
-        projectLogoUrl:
+        logoUrl:
           type: string
           format: uri
           description: URL логотипа проекта
@@ -1726,26 +1796,26 @@ components:
     ProjectRequest:
       type: object
       required:
-        - projectName
-        - projectDescription
-        - projectCategoryId
+        - name
+        - description
+        - categoryId
       properties:
         members:
           type: array
           description: Участники проекта
           items:
             $ref: '#/components/schemas/ProjectMemberRequest'
-        projectName:
+        name:
           type: string
           description: Название проекта
           minLength: 1
           example: "Open Source Platform"
-        projectDescription:
+        description:
           type: string
           description: Описание проекта
           minLength: 1
           example: "Платформа для совместной разработки open-source проектов"
-        projectCategoryId:
+        categoryId:
           type: integer
           format: int64
           description: Идентификатор категории проекта
@@ -1901,8 +1971,6 @@ components:
         multipart/form-data:
           schema:
             type: object
-            required:
-              - news
             properties:
               news:
                 $ref: '#/components/schemas/NewsRequest'
@@ -1914,8 +1982,6 @@ components:
         multipart/form-data:
           schema:
             type: object
-            required:
-              - project
             properties:
               project:
                 $ref: '#/components/schemas/ProjectRequest'

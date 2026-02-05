@@ -8,7 +8,7 @@ import org.siri_hate.main_service.dto.NewsRequestDTO;
 import org.siri_hate.main_service.model.mapper.NewsMapper;
 import org.siri_hate.main_service.model.entity.news.News;
 import org.siri_hate.main_service.repository.NewsRepository;
-import org.siri_hate.main_service.repository.adapters.NewsSpecification;
+import org.siri_hate.main_service.repository.specification.NewsSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +45,7 @@ public class NewsService {
     public NewsFullResponseDTO createNews(String username, NewsRequestDTO request, MultipartFile logo) {
         News news = newsMapper.toNews(request);
         news.setAuthor(userService.findOrCreateUser(username));
-        news.setCategory(newsCategoryService.getNewsCategoryEntityById(news.getCategory().getId()));
+        news.setCategory(newsCategoryService.getNewsCategoryEntityById(request.getCategoryId()));
         String imageKey = fileService.uploadNewsLogo(logo);
         news.setImageKey(imageKey);
         newsRepository.save(news);
@@ -58,12 +58,12 @@ public class NewsService {
     }
 
     public NewsPageResponseDTO getNews(String category, String query, int page, int size, boolean isModerationPassed) {
-        Specification<News> spec = Specification.allOf(
+        Specification<News> specification = Specification.allOf(
                 NewsSpecification.titleStartsWith(query),
                 NewsSpecification.hasCategory(category),
                 NewsSpecification.moderationPassed(isModerationPassed)
         );
-        Page<News> news = newsRepository.findAll(spec, PageRequest.of(page, size));
+        Page<News> news = newsRepository.findAll(specification, PageRequest.of(page, size));
         if (news.isEmpty()) {
             throw new EntityNotFoundException();
         }

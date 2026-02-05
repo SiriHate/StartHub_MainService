@@ -39,6 +39,7 @@ public class News {
 
     public News() {
         this.createdAt = LocalDate.now();
+        this.moderationPassed = false;
     }
 
     public Long getId() {

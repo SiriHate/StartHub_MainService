@@ -1,5 +1,6 @@
 package org.siri_hate.main_service.controller;
 
+import org.jspecify.annotations.Nullable;
 import org.siri_hate.main_service.api.ProjectApi;
 import org.siri_hate.main_service.dto.ProjectFullResponseDTO;
 import org.siri_hate.main_service.dto.ProjectPageResponseDTO;
@@ -38,6 +39,15 @@ public class ProjectController implements ProjectApi {
     }
 
     @Override
+    public ResponseEntity<ProjectPageResponseDTO> getMyProjects(Integer page, Integer size, @Nullable String role, @Nullable String query) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String username = authentication.getName();
+//        var response = projectService.getMyProjects(query, username, role, page, size);
+//         return new ResponseEntity<>(response, HttpStatus.OK);
+        return null;
+    }
+
+    @Override
     public ResponseEntity<ProjectFullResponseDTO> getProject(Long id) {
         var response = projectService.getProject(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -67,6 +77,12 @@ public class ProjectController implements ProjectApi {
     public ResponseEntity<ProjectFullResponseDTO> updateProject(Long id, ProjectRequestDTO project, MultipartFile logo) {
         var response = projectService.updateProject(id, project, logo);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> updateProjectModerationPassed(Long id, Boolean body) {
+        projectService.updateProjectModerationStatus(id, body);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override

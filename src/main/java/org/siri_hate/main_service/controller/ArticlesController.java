@@ -64,8 +64,8 @@ public class ArticlesController implements ArticleApi {
     }
 
     @Override
-    public ResponseEntity<Void> updateArticleModerationPassed(Long id, ArticleFullResponseDTO articleFullResponseDTO) {
-        articleService.updateArticleModerationStatus(id, true);
+    public ResponseEntity<Void> updateArticleModerationPassed(Long id, Boolean body) {
+        articleService.updateArticleModerationStatus(id, body);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

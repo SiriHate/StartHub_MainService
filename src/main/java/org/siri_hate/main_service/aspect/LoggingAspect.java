@@ -37,7 +37,7 @@ public class LoggingAspect {
             targetMethodResult = proceedingJoinPoint.proceed();
             LOGGER.debug("Controller method: {} - has completed", methodName);
         } catch (Throwable throwable) {
-            LOGGER.error("Exception occurred in controller method {}: {}", methodName, throwable.getMessage());
+            LOGGER.error("Exception occurred in controller method {}: {}", methodName, throwable.toString());
             throw throwable;
         }
         return targetMethodResult;
@@ -53,7 +53,7 @@ public class LoggingAspect {
             targetMethodResult = proceedingJoinPoint.proceed();
             LOGGER.debug("Service method: {} - has completed", methodName);
         } catch (Throwable throwable) {
-            LOGGER.error("Exception occurred in service method {}: {}", methodName, throwable.getMessage());
+            LOGGER.error("Exception occurred in service method {}: {}", methodName, throwable.toString());
             throw throwable;
         }
         return targetMethodResult;
@@ -69,7 +69,7 @@ public class LoggingAspect {
             targetMethodResult = proceedingJoinPoint.proceed();
             LOGGER.debug("Repository method: {} - has completed", methodName);
         } catch (Throwable throwable) {
-            LOGGER.error("Exception occurred in repository method {}: {}", methodName, throwable.getMessage());
+            LOGGER.error("Exception occurred in repository method {}: {}", methodName, throwable.toString());
             throw throwable;
         }
         return targetMethodResult;
