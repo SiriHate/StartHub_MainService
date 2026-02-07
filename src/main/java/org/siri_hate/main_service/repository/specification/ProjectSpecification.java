@@ -1,9 +1,10 @@
 package org.siri_hate.main_service.repository.specification;
 
 import jakarta.persistence.criteria.Join;
-import org.siri_hate.main_service.model.entity.news.News;
+import org.siri_hate.main_service.model.entity.User;
 import org.siri_hate.main_service.model.entity.project.Project;
 import org.siri_hate.main_service.model.entity.project.ProjectCategory;
+import org.siri_hate.main_service.model.entity.project.ProjectMember;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ProjectSpecification {
@@ -13,7 +14,7 @@ public class ProjectSpecification {
             if (projectName == null || projectName.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            return criteriaBuilder.like(root.get("projectName"), projectName + "%");
+            return criteriaBuilder.like(root.get("name"), projectName + "%");
         };
     }
 
@@ -35,12 +36,27 @@ public class ProjectSpecification {
                 cb.equal(root.get("moderationPassed"), moderationPassed);
     }
 
-    public static Specification<Project> hasUsername(String username) {
+    public static Specification<Project> hasOwnerUsername(String username) {
         return (root, query, cb) -> {
             if (username == null || username.isBlank()) {
                 return cb.conjunction();
             }
             return cb.equal(root.get("owner").get("username"), username);
+        };
+    }
+
+    public static Specification<Project> hasMemberUsername(String username) {
+        return (root, query, cb) -> {
+            if (username == null || username.isBlank()) {
+                return cb.conjunction();
+            }
+
+            query.distinct(true);
+
+            Join<Project, ProjectMember> memberJoin = root.join("members");
+            Join<ProjectMember, User> userJoin = memberJoin.join("user");
+
+            return cb.equal(userJoin.get("username"), username);
         };
     }
 }

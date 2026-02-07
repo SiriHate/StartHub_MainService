@@ -2,6 +2,7 @@ package org.siri_hate.main_service.controller;
 
 import org.jspecify.annotations.Nullable;
 import org.siri_hate.main_service.api.ProjectApi;
+import org.siri_hate.main_service.dto.MemberProjectRoleDTO;
 import org.siri_hate.main_service.dto.ProjectFullResponseDTO;
 import org.siri_hate.main_service.dto.ProjectPageResponseDTO;
 import org.siri_hate.main_service.dto.ProjectRequestDTO;
@@ -39,12 +40,11 @@ public class ProjectController implements ProjectApi {
     }
 
     @Override
-    public ResponseEntity<ProjectPageResponseDTO> getMyProjects(Integer page, Integer size, @Nullable String role, @Nullable String query) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String username = authentication.getName();
-//        var response = projectService.getMyProjects(query, username, role, page, size);
-//         return new ResponseEntity<>(response, HttpStatus.OK);
-        return null;
+    public ResponseEntity<ProjectPageResponseDTO> getMyProjects(Integer page, Integer size, @Nullable MemberProjectRoleDTO role, @Nullable String query) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        var response = projectService.getMyProjects(username, query, role, page, size);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
@@ -69,8 +69,8 @@ public class ProjectController implements ProjectApi {
     public ResponseEntity<Boolean> toggleProjectLike(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        projectService.toggleProjectLike(username, id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        var response = projectService.toggleProjectLike(username, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override

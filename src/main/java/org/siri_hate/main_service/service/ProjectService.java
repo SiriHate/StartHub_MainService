@@ -2,9 +2,11 @@ package org.siri_hate.main_service.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.siri_hate.main_service.dto.MemberProjectRoleDTO;
 import org.siri_hate.main_service.dto.ProjectFullResponseDTO;
 import org.siri_hate.main_service.dto.ProjectPageResponseDTO;
 import org.siri_hate.main_service.dto.ProjectRequestDTO;
+import org.siri_hate.main_service.model.entity.project.ProjectLike;
 import org.siri_hate.main_service.model.mapper.ProjectMapper;
 import org.siri_hate.main_service.model.entity.project.Project;
 import org.siri_hate.main_service.model.entity.User;
@@ -16,6 +18,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProjectService {
@@ -68,8 +74,25 @@ public class ProjectService {
         return projectMapper.toProjectPageResponse(projects);
     }
 
-    public ProjectPageResponseDTO getMyProjects(String username, String query, String userRole, int page, int size) {
-        return null;
+    public ProjectPageResponseDTO getMyProjects(
+            String username,
+            String query,
+            MemberProjectRoleDTO role,
+            int page,
+            int size
+    )
+    {
+        Specification<Project> spec = Specification.where(ProjectSpecification.projectNameStartsWith(query));
+        if (role == null) {
+            spec = spec.and(ProjectSpecification.hasOwnerUsername(username).or(ProjectSpecification.hasMemberUsername(username)));
+        } else {
+            switch (role) {
+                case OWNER -> spec = spec.and(ProjectSpecification.hasOwnerUsername(username));
+                case MEMBER -> spec = spec.and(ProjectSpecification.hasMemberUsername(username));
+            }
+        }
+        Page<Project> projects = projectRepository.findAll(spec, PageRequest.of(page, size));
+        return projectMapper.toProjectPageResponse(projects);
     }
 
     @Transactional
@@ -114,7 +137,7 @@ public class ProjectService {
             projectRepository.save(project);
             return false;
         } else {
-            project.addLike(user);
+            project.addLike(new ProjectLike(user, project));
             projectRepository.save(project);
             return true;
         }

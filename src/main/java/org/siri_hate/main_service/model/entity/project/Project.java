@@ -119,15 +119,7 @@ public class Project {
         this.projectLikes = projectLikes;
     }
 
-    public void addLike(User user) {
-
-        boolean alreadyLiked = projectLikes.stream().anyMatch(like -> like.getUser().getId().equals(user.getId()));
-
-        if (alreadyLiked) {
-            return;
-        }
-
-        ProjectLike like = new ProjectLike(user, this);
+    public void addLike(ProjectLike like) {
         projectLikes.add(like);
     }
 

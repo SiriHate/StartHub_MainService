@@ -339,7 +339,7 @@ paths:
           in: query
           description: Поиск проектов где участник имеет определенную роль
           schema:
-            type: string
+            $ref: '#/components/schemas/MemberProjectRole'
         - name: query
           in: query
           description: Поисковый запрос по названию проекта
@@ -1952,6 +1952,12 @@ components:
     ImageRequest:
       type: string
       format: binary
+
+    MemberProjectRole:
+      type: string
+      enum:
+        - OWNER
+        - MEMBER
 
   requestBodies:
     ArticleRequestWithImage:
