@@ -6,10 +6,11 @@ import org.siri_hate.main_service.dto.ProjectSurveyFullResponseDTO;
 import org.siri_hate.main_service.dto.ProjectSurveyRequestDTO;
 import org.siri_hate.main_service.dto.SurveySubmissionFullResponseDTO;
 import org.siri_hate.main_service.dto.SurveySubmissionRequestDTO;
+import org.siri_hate.main_service.model.entity.project.survey.ProjectSurvey;
 import org.siri_hate.main_service.model.mapper.ProjectSurveyMapper;
 import org.siri_hate.main_service.model.entity.project.Project;
 import org.siri_hate.main_service.model.entity.User;
-import org.siri_hate.main_service.model.entity.survey.SurveySubmission;
+import org.siri_hate.main_service.model.entity.project.survey.SurveySubmission;
 import org.siri_hate.main_service.model.mapper.SurveySubmissionMapper;
 import org.siri_hate.main_service.repository.ProjectSurveyRepository;
 import org.siri_hate.main_service.repository.SurveySubmissionRepository;
@@ -52,11 +53,11 @@ public class ProjectSurveyService {
         if (project.getSurvey() != null) {
             throw new EntityExistsException("Survey already exists for this project");
         }
-        org.siri_hate.main_service.model.entity.survey.ProjectSurvey survey = projectSurveyMapper.toProjectSurvey(request);
+        ProjectSurvey survey = projectSurveyMapper.toProjectSurvey(request);
         survey.setProject(project);
         project.setSurvey(survey);
         survey.getQuestions().forEach(question -> question.setSurvey(survey));
-        org.siri_hate.main_service.model.entity.survey.ProjectSurvey savedSurvey = projectSurveyRepository.save(survey);
+        ProjectSurvey savedSurvey = projectSurveyRepository.save(survey);
         projectService.updateProject(project);
         return projectSurveyMapper.toProjectSurveyFullResponseDTO(savedSurvey);
     }
@@ -64,7 +65,7 @@ public class ProjectSurveyService {
     @Transactional
     public ProjectSurveyFullResponseDTO getSurvey(Long projectId) {
         Project project = projectService.getProjectEntity(projectId);
-        org.siri_hate.main_service.model.entity.survey.ProjectSurvey survey = project.getSurvey();
+        ProjectSurvey survey = project.getSurvey();
         if (survey == null) {
             throw new EntityNotFoundException();
         }
@@ -74,7 +75,7 @@ public class ProjectSurveyService {
     @Transactional
     public void deleteSurvey(Long projectId) {
         Project project = projectService.getProjectEntity(projectId);
-        org.siri_hate.main_service.model.entity.survey.ProjectSurvey survey = project.getSurvey();
+        ProjectSurvey survey = project.getSurvey();
         if (survey == null) {
             throw new EntityNotFoundException();
         }
@@ -93,7 +94,7 @@ public class ProjectSurveyService {
     )
     {
         Project project = projectService.getProjectEntity(projectId);
-        org.siri_hate.main_service.model.entity.survey.ProjectSurvey survey = project.getSurvey();
+        ProjectSurvey survey = project.getSurvey();
         if (survey == null) {
             throw new EntityNotFoundException();
         }
@@ -112,7 +113,7 @@ public class ProjectSurveyService {
     @Transactional
     public List<SurveySubmissionFullResponseDTO> getAllSurveySubmissions(Long projectId, String sort) {
         Project project = projectService.getProjectEntity(projectId);
-        org.siri_hate.main_service.model.entity.survey.ProjectSurvey survey = project.getSurvey();
+        ProjectSurvey survey = project.getSurvey();
         if (survey == null) {
             throw new EntityNotFoundException();
         }

@@ -1,6 +1,7 @@
 package org.siri_hate.main_service.repository.specification;
 
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.siri_hate.main_service.model.entity.User;
 import org.siri_hate.main_service.model.entity.project.Project;
 import org.siri_hate.main_service.model.entity.project.ProjectCategory;
@@ -50,12 +51,10 @@ public class ProjectSpecification {
             if (username == null || username.isBlank()) {
                 return cb.conjunction();
             }
-
             query.distinct(true);
 
-            Join<Project, ProjectMember> memberJoin = root.join("members");
-            Join<ProjectMember, User> userJoin = memberJoin.join("user");
-
+            Join<Project, ProjectMember> memberJoin = root.join("members", JoinType.LEFT);
+            Join<ProjectMember, User> userJoin = memberJoin.join("user", JoinType.LEFT);
             return cb.equal(userJoin.get("username"), username);
         };
     }

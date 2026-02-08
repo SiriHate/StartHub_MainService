@@ -2,9 +2,8 @@ package org.siri_hate.main_service.model.entity.project;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.siri_hate.main_service.model.entity.Comment;
 import org.siri_hate.main_service.model.entity.User;
-import org.siri_hate.main_service.model.entity.survey.ProjectSurvey;
+import org.siri_hate.main_service.model.entity.project.survey.ProjectSurvey;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,7 +41,7 @@ public class Project {
     private List<ProjectLike> projectLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
+    private List<ProjectComment> projectComments = new ArrayList<>();
 
     @Column(name = "moderation_passed")
     private Boolean moderationPassed;
@@ -139,11 +138,11 @@ public class Project {
         this.survey = survey;
     }
 
-    public List<Comment> getComments() {
-        return comments;
+    public List<ProjectComment> getComments() {
+        return projectComments;
     }
 
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    public void setComments(List<ProjectComment> projectComments) {
+        this.projectComments = projectComments;
     }
 }

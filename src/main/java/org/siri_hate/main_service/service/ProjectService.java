@@ -7,6 +7,7 @@ import org.siri_hate.main_service.dto.ProjectFullResponseDTO;
 import org.siri_hate.main_service.dto.ProjectPageResponseDTO;
 import org.siri_hate.main_service.dto.ProjectRequestDTO;
 import org.siri_hate.main_service.model.entity.project.ProjectLike;
+import org.siri_hate.main_service.model.entity.project.ProjectMember;
 import org.siri_hate.main_service.model.mapper.ProjectMapper;
 import org.siri_hate.main_service.model.entity.project.Project;
 import org.siri_hate.main_service.model.entity.User;
@@ -83,14 +84,19 @@ public class ProjectService {
     )
     {
         Specification<Project> spec = Specification.where(ProjectSpecification.projectNameStartsWith(query));
+
         if (role == null) {
-            spec = spec.and(ProjectSpecification.hasOwnerUsername(username).or(ProjectSpecification.hasMemberUsername(username)));
+            spec = spec.and(
+                    ProjectSpecification.hasOwnerUsername(username)
+                            .or(ProjectSpecification.hasMemberUsername(username))
+            );
         } else {
             switch (role) {
                 case OWNER -> spec = spec.and(ProjectSpecification.hasOwnerUsername(username));
                 case MEMBER -> spec = spec.and(ProjectSpecification.hasMemberUsername(username));
             }
         }
+
         Page<Project> projects = projectRepository.findAll(spec, PageRequest.of(page, size));
         return projectMapper.toProjectPageResponse(projects);
     }
@@ -108,9 +114,25 @@ public class ProjectService {
     @Transactional
     public ProjectFullResponseDTO updateProject(Long id, ProjectRequestDTO request, MultipartFile logo) {
         Project project = projectRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+        projectMapper.projectUpdate(request, project);
+
         project.setCategory(projectCategoryService.getProjectCategoryEntityById(request.getCategoryId()));
+
         String imageKey = fileService.uploadProjectLogo(logo);
         project.setImageKey(imageKey);
+
+        if (request.getMembers() != null) {
+            project.getMembers().clear();
+            for (var memberRequest : request.getMembers()) {
+                ProjectMember member = new ProjectMember();
+                member.setUser(userService.findOrCreateUser(memberRequest.getUsername()));
+                member.setRole(memberRequest.getRole());
+                member.setProject(project);
+                project.getMembers().add(member);
+            }
+        }
+
         projectRepository.save(project);
         projectSubscriberService.notifySubscribersAboutUpdate(id, project.getName());
         return projectMapper.toProjectFullResponse(project);

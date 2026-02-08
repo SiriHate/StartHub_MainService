@@ -1,13 +1,13 @@
-package org.siri_hate.main_service.model.entity;
+package org.siri_hate.main_service.model.entity.project;
 
 import jakarta.persistence.*;
-import org.siri_hate.main_service.model.entity.project.Project;
+import org.siri_hate.main_service.model.entity.User;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
-public class Comment {
+public class ProjectComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,15 +27,15 @@ public class Comment {
     @Column(name = "created_at", nullable = false)
     private final LocalDateTime createdAt;
 
-    public Comment() {
+    public ProjectComment() {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Comment(User author, Project project, String text) {
+    public ProjectComment(User author, Project project, String text) {
+        this();
         this.author = author;
         this.text = text;
         this.project = project;
-        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {

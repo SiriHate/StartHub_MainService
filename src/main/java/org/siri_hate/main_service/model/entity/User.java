@@ -7,7 +7,7 @@ import org.siri_hate.main_service.model.entity.article.Article;
 import org.siri_hate.main_service.model.entity.news.News;
 import org.siri_hate.main_service.model.entity.project.Project;
 import org.siri_hate.main_service.model.entity.project.ProjectMember;
-import org.siri_hate.main_service.model.entity.survey.SurveySubmission;
+import org.siri_hate.main_service.model.entity.project.survey.SurveySubmission;
 
 import java.util.HashSet;
 import java.util.Set;

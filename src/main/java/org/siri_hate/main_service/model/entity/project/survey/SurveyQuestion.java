@@ -1,4 +1,4 @@
-package org.siri_hate.main_service.model.entity.survey;
+package org.siri_hate.main_service.model.entity.project.survey;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

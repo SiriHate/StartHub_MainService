@@ -35,6 +35,7 @@ public interface ProjectMapper {
 
     @Mapping(target = "logoUrl", source = "imageKey", qualifiedByName = "toProjectUrl")
     @Mapping(target = "category", source = "category", qualifiedByName = "toProjectCategoryName")
+    @Mapping(target = "hasSurvey", expression = "java(project.getSurvey() != null)")
     ProjectFullResponseDTO toProjectFullResponse(Project project);
 
     @Mapping(target = "logoUrl", source = "imageKey", qualifiedByName = "toProjectUrl")

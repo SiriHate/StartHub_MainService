@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.siri_hate.main_service.dto.SurveySubmissionFullResponseDTO;
 import org.siri_hate.main_service.dto.SurveySubmissionRequestDTO;
-import org.siri_hate.main_service.model.entity.survey.SurveySubmission;
+import org.siri_hate.main_service.model.entity.project.survey.SurveySubmission;
 
 import java.util.List;
 
