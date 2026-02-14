@@ -13,22 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CategoryResolver {
 
-    private final ArticleCategoryService articleCategoryService;
-    private final NewsCategoryService newsCategoryService;
-    private final ProjectCategoryService projectCategoryService;
-
-    @Autowired
-    public CategoryResolver(
-            ArticleCategoryService articleCategoryService,
-            NewsCategoryService newsCategoryService,
-            ProjectCategoryService projectCategoryService
-    )
-    {
-        this.articleCategoryService = articleCategoryService;
-        this.newsCategoryService = newsCategoryService;
-        this.projectCategoryService = projectCategoryService;
-    }
-
     @Named("toArticleCategoryName")
     public String toArticleCategory(ArticleCategory articleCategory) {
         return articleCategory == null ? null :articleCategory.getName();

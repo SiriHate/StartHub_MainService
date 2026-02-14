@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjectSurveyService {
@@ -56,7 +57,6 @@ public class ProjectSurveyService {
         ProjectSurvey survey = projectSurveyMapper.toProjectSurvey(request);
         survey.setProject(project);
         project.setSurvey(survey);
-        survey.getQuestions().forEach(question -> question.setSurvey(survey));
         ProjectSurvey savedSurvey = projectSurveyRepository.save(survey);
         projectService.updateProject(project);
         return projectSurveyMapper.toProjectSurveyFullResponseDTO(savedSurvey);
@@ -79,11 +79,8 @@ public class ProjectSurveyService {
         if (survey == null) {
             throw new EntityNotFoundException();
         }
-        List<SurveySubmission> submissions = surveySubmissionRepository.findBySurvey(survey);
-        surveySubmissionRepository.deleteAll(submissions);
         project.setSurvey(null);
         projectService.updateProject(project);
-        projectSurveyRepository.delete(survey);
     }
 
     @Transactional
@@ -93,19 +90,11 @@ public class ProjectSurveyService {
             SurveySubmissionRequestDTO request
     )
     {
-        Project project = projectService.getProjectEntity(projectId);
-        ProjectSurvey survey = project.getSurvey();
-        if (survey == null) {
-            throw new EntityNotFoundException();
-        }
-        User user = userService.findOrCreateUser(username);
-        boolean hasAlreadySubmitted = surveySubmissionRepository.existsBySurveyAndRespondent(survey, user);
-        if (hasAlreadySubmitted) {
-            throw new IllegalStateException();
-        }
-        SurveySubmission submission = new SurveySubmission();
-        submission.setSurvey(survey);
-        submission.setRespondent(user);
+        ProjectSurvey survey = Optional
+                .ofNullable(projectService.getProjectEntity(projectId).getSurvey())
+                .orElseThrow(EntityExistsException::new);
+        User respondent = userService.findOrCreateUser(username);
+        SurveySubmission submission = surveySubmissionMapper.toSurveySubmission(respondent, survey, request);
         SurveySubmission savedSubmission = surveySubmissionRepository.save(submission);
         return surveySubmissionMapper.toSurveySubmissionFullResponseDTO(savedSubmission);
     }

@@ -9,8 +9,6 @@ import org.siri_hate.main_service.service.ProjectSurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,16 +42,14 @@ public class ProjectSurveyController implements ProjectSurveyApi {
     }
 
     @Override
-    public ResponseEntity<ProjectSurveyFullResponseDTO> getProjectSurvey(Long projectId) {
-        var response = projectSurveyService.getSurvey(projectId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<SurveySubmissionFullResponseDTO> submitProjectSurveyAnswers(Long projectId, String xUserName, SurveySubmissionRequestDTO surveySubmissionRequestDTO) {
+        var response = projectSurveyService.submitSurveyAnswers(xUserName, projectId, surveySubmissionRequestDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<SurveySubmissionFullResponseDTO> submitProjectSurveyAnswers(Long projectId, SurveySubmissionRequestDTO surveySubmissionRequestDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        var response = projectSurveyService.submitSurveyAnswers(username, projectId, surveySubmissionRequestDTO);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<ProjectSurveyFullResponseDTO> getProjectSurvey(Long projectId) {
+        var response = projectSurveyService.getSurvey(projectId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

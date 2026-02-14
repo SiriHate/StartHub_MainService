@@ -15,13 +15,15 @@ public class ProjectSurvey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "project_id", nullable = false, unique = true)
     private Project project;
 
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SurveyQuestion> questions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SurveySubmission> submissions = new ArrayList<>();
 
     public ProjectSurvey() {}
 
@@ -41,11 +43,19 @@ public class ProjectSurvey {
         this.project = project;
     }
 
+    public void setSubmissions(List<SurveySubmission> submissions) {
+        this.submissions = submissions;
+    }
+
     public List<SurveyQuestion> getQuestions() {
         return questions;
     }
 
     public void setQuestions(List<SurveyQuestion> questions) {
         this.questions = questions;
+    }
+
+    public List<SurveySubmission> getSubmissions() {
+        return submissions;
     }
 }

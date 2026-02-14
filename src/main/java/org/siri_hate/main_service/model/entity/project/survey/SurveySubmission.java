@@ -40,6 +40,12 @@ public class SurveySubmission {
         this.submittedAt = LocalDateTime.now();
     }
 
+    public SurveySubmission(ProjectSurvey survey, User respondent) {
+        this();
+        this.survey = survey;
+        this.respondent = respondent;
+    }
+
     public Long getId() {
         return id;
     }

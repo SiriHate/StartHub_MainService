@@ -138,6 +138,7 @@ public class ProjectService {
         return projectMapper.toProjectFullResponse(project);
     }
 
+    @Transactional
     public Project updateProject(Project project) {
         return projectRepository.save(project);
     }

@@ -10,8 +10,6 @@ import org.siri_hate.main_service.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,10 +24,8 @@ public class ProjectController implements ProjectApi {
     }
 
     @Override
-    public ResponseEntity<ProjectFullResponseDTO> createProject(ProjectRequestDTO project, MultipartFile logo) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String ownerUsername = authentication.getName();
-        var response = projectService.createProject(ownerUsername, project, logo);
+    public ResponseEntity<ProjectFullResponseDTO> createProject(String xUserName, ProjectRequestDTO project, MultipartFile logo) {
+        var response = projectService.createProject(xUserName, project, logo);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -40,10 +36,8 @@ public class ProjectController implements ProjectApi {
     }
 
     @Override
-    public ResponseEntity<ProjectPageResponseDTO> getMyProjects(Integer page, Integer size, @Nullable MemberProjectRoleDTO role, @Nullable String query) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        var response = projectService.getMyProjects(username, query, role, page, size);
+    public ResponseEntity<ProjectPageResponseDTO> getMyProjects(Integer page, Integer size, String xUserName, @Nullable MemberProjectRoleDTO role, @Nullable String query) {
+        var response = projectService.getMyProjects(xUserName, query, role, page, size);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -66,10 +60,8 @@ public class ProjectController implements ProjectApi {
     }
 
     @Override
-    public ResponseEntity<Boolean> toggleProjectLike(Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        var response = projectService.toggleProjectLike(username, id);
+    public ResponseEntity<Boolean> toggleProjectLike(Long id, String xUserName) {
+        var response = projectService.toggleProjectLike(xUserName, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

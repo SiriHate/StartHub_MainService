@@ -7,8 +7,6 @@ import org.siri_hate.main_service.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,18 +22,14 @@ public class CommentController implements ProjectCommentApi {
     }
 
     @Override
-    public ResponseEntity<CommentResponseDTO> createProjectComment(Long projectId, CommentRequestDTO commentRequestDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        var response = commentService.createComment(username, projectId, commentRequestDTO);
+    public ResponseEntity<CommentResponseDTO> createProjectComment(Long projectId, String xUserName, CommentRequestDTO commentRequestDTO) {
+        var response = commentService.createComment(xUserName, projectId, commentRequestDTO);
         return new  ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Void> deleteComment(Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        commentService.deleteComment(id, username);
+    public ResponseEntity<Void> deleteComment(Long id, String xUserName) {
+        commentService.deleteComment(id, xUserName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

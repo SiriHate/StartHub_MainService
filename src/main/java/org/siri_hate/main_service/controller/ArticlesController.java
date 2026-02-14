@@ -1,5 +1,6 @@
 package org.siri_hate.main_service.controller;
 
+import org.jspecify.annotations.Nullable;
 import org.siri_hate.main_service.api.ArticleApi;
 import org.siri_hate.main_service.dto.ArticleFullResponseDTO;
 import org.siri_hate.main_service.dto.ArticlePageResponseDTO;
@@ -8,8 +9,6 @@ import org.siri_hate.main_service.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,10 +23,8 @@ public class ArticlesController implements ArticleApi {
     }
 
     @Override
-    public ResponseEntity<ArticleFullResponseDTO> createArticle(ArticleRequestDTO article, MultipartFile logo) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        var response = articleService.createArticle(username, article, logo);
+    public ResponseEntity<ArticleFullResponseDTO> createArticle(String xUserName, ArticleRequestDTO article, MultipartFile logo) {
+        var response = articleService.createArticle(xUserName, article, logo);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -50,10 +47,8 @@ public class ArticlesController implements ArticleApi {
     }
 
     @Override
-    public ResponseEntity<ArticlePageResponseDTO> getMyArticles(String query, Integer page, Integer size) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        var response = articleService.getArticles(username, query, page, size);
+    public ResponseEntity<ArticlePageResponseDTO> getMyArticles(String xUserName, @Nullable String query, Integer page, Integer size) {
+        var response = articleService.getArticles(xUserName, query, page, size);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
