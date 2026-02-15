@@ -11,7 +11,6 @@ import org.siri_hate.main_service.model.entity.project.survey.SurveyAnswer;
         unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public interface SurveyAnswerMapper {
-
     SurveyAnswer toSurveyAnswer(SurveyAnswerRequestDTO request);
 
     SurveyAnswerFullResponseDTO toSurveyAnswerFullResponseDTO(SurveyAnswer surveyAnswer);

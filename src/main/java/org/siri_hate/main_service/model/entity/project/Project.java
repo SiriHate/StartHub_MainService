@@ -3,6 +3,10 @@ package org.siri_hate.main_service.model.entity.project;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.siri_hate.main_service.model.entity.User;
+import org.siri_hate.main_service.model.entity.project.search.EmployeeSearch;
+import org.siri_hate.main_service.model.entity.project.search.FounderSearch;
+import org.siri_hate.main_service.model.entity.project.search.InvestorSearch;
+import org.siri_hate.main_service.model.entity.project.search.MentorSearch;
 import org.siri_hate.main_service.model.entity.project.survey.ProjectSurvey;
 
 import java.util.ArrayList;
@@ -49,6 +53,18 @@ public class Project {
     @JsonIgnore
     @OneToOne(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProjectSurvey survey;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EmployeeSearch> employeeSearches = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FounderSearch> founderSearches = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InvestorSearch> investorSearches = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MentorSearch> mentorSearches = new ArrayList<>();
 
     public Project() {
         this.moderationPassed = false;
@@ -144,5 +160,37 @@ public class Project {
 
     public void setComments(List<ProjectComment> projectComments) {
         this.projectComments = projectComments;
+    }
+
+    public List<EmployeeSearch> getEmployeeSearches() {
+        return employeeSearches;
+    }
+
+    public void setEmployeeSearches(List<EmployeeSearch> employeeSearches) {
+        this.employeeSearches = employeeSearches;
+    }
+
+    public List<FounderSearch> getFounderSearches() {
+        return founderSearches;
+    }
+
+    public void setFounderSearches(List<FounderSearch> founderSearches) {
+        this.founderSearches = founderSearches;
+    }
+
+    public List<InvestorSearch> getInvestorSearches() {
+        return investorSearches;
+    }
+
+    public void setInvestorSearches(List<InvestorSearch> investorSearches) {
+        this.investorSearches = investorSearches;
+    }
+
+    public List<MentorSearch> getMentorSearches() {
+        return mentorSearches;
+    }
+
+    public void setMentorSearches(List<MentorSearch> mentorSearches) {
+        this.mentorSearches = mentorSearches;
     }
 }

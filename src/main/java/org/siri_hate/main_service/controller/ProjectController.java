@@ -82,4 +82,16 @@ public class ProjectController implements ProjectApi {
         projectService.updateProjectModerationStatus(id, body);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<ProjectPageResponseDTO> searchProjectsHiring(Integer page, Integer size, @Nullable String specialization, @Nullable String query) {
+        var response = projectService.searchProjectsHiring(specialization, query, page, size);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ProjectPageResponseDTO> searchProjectsLookingFor(String type, Integer page, Integer size, @Nullable String domain, @Nullable String query) {
+        var response = projectService.searchProjectsLookingFor(type, domain, query, page, size);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

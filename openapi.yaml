@@ -199,6 +199,418 @@ paths:
                 items:
                   $ref: '#/components/schemas/SurveySubmissionFullResponse'
 
+  /api/v1/main_service/projects/{projectId}/searches/employees:
+    post:
+      tags:
+        - ProjectSearch
+      summary: Создание записи поиска сотрудника
+      operationId: createEmployeeSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeSearchRequest'
+      responses:
+        '201':
+          description: Запись создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeSearchFullResponse'
+    get:
+      tags:
+        - ProjectSearch
+      summary: Получение записей поиска сотрудников проекта
+      operationId: getEmployeeSearches
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список записей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeSearchFullResponse'
+
+  /api/v1/main_service/projects/{projectId}/searches/employees/{id}:
+    put:
+      tags:
+        - ProjectSearch
+      summary: Обновление записи поиска сотрудника
+      operationId: updateEmployeeSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeSearchRequest'
+      responses:
+        '200':
+          description: Запись обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeSearchFullResponse'
+    delete:
+      tags:
+        - ProjectSearch
+      summary: Удаление записи поиска сотрудника
+      operationId: deleteEmployeeSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Запись удалена
+          content: { }
+
+  /api/v1/main_service/projects/{projectId}/searches/founders:
+    post:
+      tags:
+        - ProjectSearch
+      summary: Создание записи поиска сооснователя
+      operationId: createFounderSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FounderSearchRequest'
+      responses:
+        '201':
+          description: Запись создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FounderSearchFullResponse'
+    get:
+      tags:
+        - ProjectSearch
+      summary: Получение записей поиска сооснователей проекта
+      operationId: getFounderSearches
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список записей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FounderSearchFullResponse'
+
+  /api/v1/main_service/projects/{projectId}/searches/founders/{id}:
+    put:
+      tags:
+        - ProjectSearch
+      summary: Обновление записи поиска сооснователя
+      operationId: updateFounderSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FounderSearchRequest'
+      responses:
+        '200':
+          description: Запись обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FounderSearchFullResponse'
+    delete:
+      tags:
+        - ProjectSearch
+      summary: Удаление записи поиска сооснователя
+      operationId: deleteFounderSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Запись удалена
+          content: { }
+
+  /api/v1/main_service/projects/{projectId}/searches/investors:
+    post:
+      tags:
+        - ProjectSearch
+      summary: Создание записи поиска инвестора
+      operationId: createInvestorSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestorSearchRequest'
+      responses:
+        '201':
+          description: Запись создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestorSearchFullResponse'
+    get:
+      tags:
+        - ProjectSearch
+      summary: Получение записей поиска инвесторов проекта
+      operationId: getInvestorSearches
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список записей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvestorSearchFullResponse'
+
+  /api/v1/main_service/projects/{projectId}/searches/investors/{id}:
+    put:
+      tags:
+        - ProjectSearch
+      summary: Обновление записи поиска инвестора
+      operationId: updateInvestorSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestorSearchRequest'
+      responses:
+        '200':
+          description: Запись обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestorSearchFullResponse'
+    delete:
+      tags:
+        - ProjectSearch
+      summary: Удаление записи поиска инвестора
+      operationId: deleteInvestorSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Запись удалена
+          content: { }
+
+  /api/v1/main_service/projects/{projectId}/searches/mentors:
+    post:
+      tags:
+        - ProjectSearch
+      summary: Создание записи поиска ментора
+      operationId: createMentorSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentorSearchRequest'
+      responses:
+        '201':
+          description: Запись создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorSearchFullResponse'
+    get:
+      tags:
+        - ProjectSearch
+      summary: Получение записей поиска менторов проекта
+      operationId: getMentorSearches
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список записей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MentorSearchFullResponse'
+
+  /api/v1/main_service/projects/{projectId}/searches/mentors/{id}:
+    put:
+      tags:
+        - ProjectSearch
+      summary: Обновление записи поиска ментора
+      operationId: updateMentorSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentorSearchRequest'
+      responses:
+        '200':
+          description: Запись обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorSearchFullResponse'
+    delete:
+      tags:
+        - ProjectSearch
+      summary: Удаление записи поиска ментора
+      operationId: deleteMentorSearch
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Запись удалена
+          content: { }
+
   /api/v1/main_service/projects/{projectId}/comments:
     post:
       tags:
@@ -323,6 +735,92 @@ paths:
         - name: size
           in: query
           description: Размер страницы
+          required: true
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: Список проектов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectPageResponse'
+
+  /api/v1/main_service/projects/search/hiring:
+    get:
+      tags:
+        - Project
+      summary: Поиск проектов, набирающих команду
+      description: Возвращает проекты, у которых есть баннер поиска сотрудника. Можно фильтровать по специализации.
+      operationId: searchProjectsHiring
+      parameters:
+        - name: specialization
+          in: query
+          description: Фильтр по специализации (частичное совпадение)
+          schema:
+            type: string
+        - name: query
+          in: query
+          description: Поисковый запрос по названию проекта
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: size
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: Список проектов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectPageResponse'
+
+  /api/v1/main_service/projects/search/looking-for:
+    get:
+      tags:
+        - Project
+      summary: Поиск проектов, ищущих ментора/инвестора/сооснователя
+      description: Возвращает проекты, у которых есть баннер поиска указанного типа (mentor, investor, founder). Для founder можно фильтровать по области (domain).
+      operationId: searchProjectsLookingFor
+      parameters:
+        - name: type
+          in: query
+          required: true
+          description: "Тип поиска: mentor, investor, founder"
+          schema:
+            type: string
+            enum:
+              - mentor
+              - investor
+              - founder
+        - name: domain
+          in: query
+          description: Фильтр по области (для founder)
+          schema:
+            type: string
+        - name: query
+          in: query
+          description: Поисковый запрос по названию проекта
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: size
+          in: query
           required: true
           schema:
             type: integer
@@ -786,6 +1284,252 @@ paths:
           description: Статус модерации успешно обновлен
         '404':
           description: Статья не найдена
+
+  /api/v1/main_service/news/{newsId}/comments:
+    post:
+      tags:
+        - NewsComment
+      summary: Создание комментария к новости
+      description: Добавляет комментарий текущего пользователя к указанной новости.
+      operationId: createNewsComment
+      parameters:
+        - name: newsId
+          in: path
+          required: true
+          description: Идентификатор новости
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/XUserNameHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      responses:
+        '200':
+          description: Комментарий успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+    get:
+      tags:
+        - NewsComment
+      summary: Получение комментариев новости
+      description: Возвращает список всех комментариев к новости.
+      operationId: getNewsComments
+      parameters:
+        - name: newsId
+          in: path
+          required: true
+          description: Идентификатор новости
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentResponse'
+
+  /api/v1/main_service/news-comments/{id}:
+    delete:
+      tags:
+        - NewsComment
+      summary: Удаление комментария к новости
+      description: Удаляет комментарий с указанным идентификатором. Доступно только автору комментария.
+      operationId: deleteNewsComment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/XUserNameHeader'
+      responses:
+        '200':
+          description: Комментарий успешно удален
+          content: { }
+
+  /api/v1/main_service/news/{id}/likes:
+    post:
+      tags:
+        - NewsLike
+      summary: Лайк/дизлайк новости
+      description: Переключает лайк текущего пользователя для указанной новости.
+      operationId: toggleNewsLike
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор новости
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/XUserNameHeader'
+      responses:
+        '200':
+          description: Состояние лайка после операции
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+
+  /api/v1/main_service/news/{id}/likes/count:
+    get:
+      tags:
+        - NewsLike
+      summary: Получение количества лайков новости
+      description: Возвращает текущее количество лайков новости.
+      operationId: getNewsLikesCount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор новости
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Количество лайков новости
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+
+  /api/v1/main_service/articles/{articleId}/comments:
+    post:
+      tags:
+        - ArticleComment
+      summary: Создание комментария к статье
+      description: Добавляет комментарий текущего пользователя к указанной статье.
+      operationId: createArticleComment
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          description: Идентификатор статьи
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/XUserNameHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      responses:
+        '200':
+          description: Комментарий успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+    get:
+      tags:
+        - ArticleComment
+      summary: Получение комментариев статьи
+      description: Возвращает список всех комментариев к статье.
+      operationId: getArticleComments
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          description: Идентификатор статьи
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentResponse'
+
+  /api/v1/main_service/article-comments/{id}:
+    delete:
+      tags:
+        - ArticleComment
+      summary: Удаление комментария к статье
+      description: Удаляет комментарий с указанным идентификатором. Доступно только автору комментария.
+      operationId: deleteArticleComment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/XUserNameHeader'
+      responses:
+        '200':
+          description: Комментарий успешно удален
+          content: { }
+
+  /api/v1/main_service/articles/{id}/likes:
+    post:
+      tags:
+        - ArticleLike
+      summary: Лайк/дизлайк статьи
+      description: Переключает лайк текущего пользователя для указанной статьи.
+      operationId: toggleArticleLike
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор статьи
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/XUserNameHeader'
+      responses:
+        '200':
+          description: Состояние лайка после операции
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+
+  /api/v1/main_service/articles/{id}/likes/count:
+    get:
+      tags:
+        - ArticleLike
+      summary: Получение количества лайков статьи
+      description: Возвращает текущее количество лайков статьи.
+      operationId: getArticleLikesCount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор статьи
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Количество лайков статьи
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
 
   /api/v1/main_service/article-categories:
     get:
@@ -1776,6 +2520,26 @@ components:
           description: Комментарии к проекту
           items:
             $ref: '#/components/schemas/CommentResponse'
+        employeeSearches:
+          type: array
+          description: Поиск сотрудников
+          items:
+            $ref: '#/components/schemas/EmployeeSearchFullResponse'
+        founderSearches:
+          type: array
+          description: Поиск сооснователей
+          items:
+            $ref: '#/components/schemas/FounderSearchFullResponse'
+        investorSearches:
+          type: array
+          description: Поиск инвесторов
+          items:
+            $ref: '#/components/schemas/InvestorSearchFullResponse'
+        mentorSearches:
+          type: array
+          description: Поиск менторов
+          items:
+            $ref: '#/components/schemas/MentorSearchFullResponse'
 
     ProjectSummaryResponse:
       type: object
@@ -1789,6 +2553,11 @@ components:
           type: string
           description: Имя пользователя
           example: "User12345"
+        members:
+          type: array
+          description: Участники проекта
+          items:
+            $ref: '#/components/schemas/ProjectMemberFullResponse'
         name:
           type: string
           description: Название проекта
@@ -1915,11 +2684,6 @@ components:
           format: int64
           description: Идентификатор отправки ответов
           example: 55
-        surveyId:
-          type: integer
-          format: int64
-          description: Идентификатор опроса
-          example: 10
         respondentUsername:
           type: string
           description: Username пользователя, прошедшего опрос
@@ -1963,6 +2727,127 @@ components:
           type: string
           description: Текст ответа пользователя
           example: "Очень интересен"
+
+    EmployeeSearchRequest:
+      type: object
+      required:
+        - specialization
+        - about
+      properties:
+        specialization:
+          type: string
+          description: Название специализации
+          minLength: 1
+          example: "Backend Developer"
+        about:
+          type: string
+          description: Описание требований
+          example: "Ищем опытного backend разработчика"
+
+    FounderSearchRequest:
+      type: object
+      required:
+        - domain
+        - about
+      properties:
+        domain:
+          type: string
+          description: Направление деятельности
+          example: "FinTech"
+        about:
+          type: string
+          description: Описание требований
+          example: "Ищем сооснователя с опытом в финансах"
+
+    InvestorSearchRequest:
+      type: object
+      required:
+        - domain
+        - about
+      properties:
+        domain:
+          type: string
+          description: Направление деятельности
+          example: "FinTech"
+        about:
+          type: string
+          description: Описание требований
+          example: "Ищем инвестора для seed-раунда"
+
+    MentorSearchRequest:
+      type: object
+      required:
+        - domain
+        - about
+      properties:
+        domain:
+          type: string
+          description: Направление деятельности
+          example: "FinTech"
+        about:
+          type: string
+          description: Описание требований
+          example: "Ищем ментора с опытом в EdTech"
+
+    EmployeeSearchFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор записи поиска сотрудника
+          example: 1
+        specialization:
+          type: string
+          description: Название специализации
+          example: "Backend Developer"
+        about:
+          type: string
+          description: Описание требований
+          example: "Ищем опытного backend разработчика"
+
+    FounderSearchFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор записи поиска сооснователя
+          example: 1
+        domain:
+          type: string
+          description: Направление деятельности
+          example: "FinTech"
+        about:
+          type: string
+          description: Описание требований
+          example: "Ищем сооснователя с опытом в финансах"
+
+    InvestorSearchFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор записи поиска инвестора
+          example: 1
+        about:
+          type: string
+          description: Описание требований
+          example: "Ищем инвестора для seed-раунда"
+
+    MentorSearchFullResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор записи поиска ментора
+          example: 1
+        about:
+          type: string
+          description: Описание требований
+          example: "Ищем ментора с опытом в EdTech"
 
     ImageRequest:
       type: string

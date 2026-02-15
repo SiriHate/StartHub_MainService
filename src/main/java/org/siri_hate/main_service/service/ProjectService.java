@@ -101,6 +101,27 @@ public class ProjectService {
         return projectMapper.toProjectPageResponse(projects);
     }
 
+    public ProjectPageResponseDTO searchProjectsHiring(String specialization, String query, int page, int size) {
+        Specification<Project> spec = Specification.where(ProjectSpecification.projectNameStartsWith(query))
+                .and(ProjectSpecification.moderationPassed(true))
+                .and(ProjectSpecification.hasEmployeeSearch(specialization));
+        Page<Project> projects = projectRepository.findAll(spec, PageRequest.of(page, size));
+        return projectMapper.toProjectPageResponse(projects);
+    }
+
+    public ProjectPageResponseDTO searchProjectsLookingFor(String type, String domain, String query, int page, int size) {
+        Specification<Project> spec = Specification.where(ProjectSpecification.projectNameStartsWith(query))
+                .and(ProjectSpecification.moderationPassed(true));
+        switch (type) {
+            case "founder" -> spec = spec.and(ProjectSpecification.hasFounderSearch(domain));
+            case "investor" -> spec = spec.and(ProjectSpecification.hasInvestorSearch());
+            case "mentor" -> spec = spec.and(ProjectSpecification.hasMentorSearch());
+            default -> throw new IllegalArgumentException("Unknown search type: " + type);
+        }
+        Page<Project> projects = projectRepository.findAll(spec, PageRequest.of(page, size));
+        return projectMapper.toProjectPageResponse(projects);
+    }
+
     @Transactional
     public ProjectFullResponseDTO getProject(Long id) {
         Project project = projectRepository.findById(id).orElseThrow(EntityNotFoundException::new);

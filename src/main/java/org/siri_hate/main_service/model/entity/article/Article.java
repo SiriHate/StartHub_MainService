@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.siri_hate.main_service.model.entity.User;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "articles")
@@ -33,6 +35,12 @@ public class Article {
 
     @Column(name = "createdAt", nullable = false)
     private final LocalDate createdAt;
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ArticleLike> articleLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ArticleComment> articleComments = new ArrayList<>();
 
     @Column(name = "moderation_passed",  nullable = false)
     private Boolean moderationPassed;
@@ -100,5 +108,21 @@ public class Article {
 
     public void setModerationPassed(Boolean moderationPassed) {
         this.moderationPassed = moderationPassed;
+    }
+
+    public List<ArticleLike> getArticleLikes() {
+        return articleLikes;
+    }
+
+    public void setArticleLikes(List<ArticleLike> articleLikes) {
+        this.articleLikes = articleLikes;
+    }
+
+    public List<ArticleComment> getArticleComments() {
+        return articleComments;
+    }
+
+    public void setArticleComments(List<ArticleComment> articleComments) {
+        this.articleComments = articleComments;
     }
 }
