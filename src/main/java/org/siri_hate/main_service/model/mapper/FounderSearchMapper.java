@@ -5,7 +5,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import org.siri_hate.main_service.dto.FounderSearchFullResponseDTO;
 import org.siri_hate.main_service.dto.FounderSearchRequestDTO;
-import org.siri_hate.main_service.model.entity.project.search.FounderSearch;
+import org.siri_hate.main_service.model.entity.project.search.PartnerSearch;
 
 import java.util.List;
 
@@ -14,11 +14,11 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public interface FounderSearchMapper {
-    FounderSearch toEntity(FounderSearchRequestDTO request);
+    PartnerSearch toEntity(FounderSearchRequestDTO request);
 
-    void updateEntity(FounderSearchRequestDTO request, @MappingTarget FounderSearch entity);
+    void updateEntity(FounderSearchRequestDTO request, @MappingTarget PartnerSearch entity);
 
-    FounderSearchFullResponseDTO toFullResponse(FounderSearch entity);
+    FounderSearchFullResponseDTO toFullResponse(PartnerSearch entity);
 
-    List<FounderSearchFullResponseDTO> toFullResponseList(List<FounderSearch> entities);
+    List<FounderSearchFullResponseDTO> toFullResponseList(List<PartnerSearch> entities);
 }

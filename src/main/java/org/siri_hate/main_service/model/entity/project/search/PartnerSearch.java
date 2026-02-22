@@ -5,7 +5,7 @@ import org.siri_hate.main_service.model.entity.project.Project;
 
 @Entity
 @Table(name = "project_founder_search")
-public class FounderSearch {
+public class PartnerSearch {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class FounderSearch {
 
     private String about;
 
-    public FounderSearch() {}
+    public PartnerSearch() {}
 
     public Long getId() {
         return id;

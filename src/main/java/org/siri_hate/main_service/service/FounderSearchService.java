@@ -4,7 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.siri_hate.main_service.dto.FounderSearchFullResponseDTO;
 import org.siri_hate.main_service.dto.FounderSearchRequestDTO;
 import org.siri_hate.main_service.model.entity.project.Project;
-import org.siri_hate.main_service.model.entity.project.search.FounderSearch;
+import org.siri_hate.main_service.model.entity.project.search.PartnerSearch;
 import org.siri_hate.main_service.model.mapper.FounderSearchMapper;
 import org.siri_hate.main_service.repository.FounderSearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,20 +34,20 @@ public class FounderSearchService {
     @Transactional
     public FounderSearchFullResponseDTO create(Long projectId, FounderSearchRequestDTO request) {
         Project project = projectService.getProjectEntity(projectId);
-        FounderSearch entity = mapper.toEntity(request);
+        PartnerSearch entity = mapper.toEntity(request);
         entity.setProject(project);
         repository.save(entity);
         return mapper.toFullResponse(entity);
     }
 
     public List<FounderSearchFullResponseDTO> getByProjectId(Long projectId) {
-        List<FounderSearch> entities = repository.findByProjectId(projectId);
+        List<PartnerSearch> entities = repository.findByProjectId(projectId);
         return mapper.toFullResponseList(entities);
     }
 
     @Transactional
     public FounderSearchFullResponseDTO update(Long id, FounderSearchRequestDTO request) {
-        FounderSearch entity = repository.findById(id).orElseThrow(EntityNotFoundException::new);
+        PartnerSearch entity = repository.findById(id).orElseThrow(EntityNotFoundException::new);
         mapper.updateEntity(request, entity);
         repository.save(entity);
         return mapper.toFullResponse(entity);

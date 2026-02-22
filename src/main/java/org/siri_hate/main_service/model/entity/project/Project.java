@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.siri_hate.main_service.model.entity.User;
 import org.siri_hate.main_service.model.entity.project.search.EmployeeSearch;
-import org.siri_hate.main_service.model.entity.project.search.FounderSearch;
+import org.siri_hate.main_service.model.entity.project.search.PartnerSearch;
 import org.siri_hate.main_service.model.entity.project.search.InvestorSearch;
 import org.siri_hate.main_service.model.entity.project.search.MentorSearch;
 import org.siri_hate.main_service.model.entity.project.survey.ProjectSurvey;
@@ -58,7 +58,7 @@ public class Project {
     private List<EmployeeSearch> employeeSearches = new ArrayList<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FounderSearch> founderSearches = new ArrayList<>();
+    private List<PartnerSearch> partnerSearches = new ArrayList<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InvestorSearch> investorSearches = new ArrayList<>();
@@ -170,12 +170,12 @@ public class Project {
         this.employeeSearches = employeeSearches;
     }
 
-    public List<FounderSearch> getFounderSearches() {
-        return founderSearches;
+    public List<PartnerSearch> getFounderSearches() {
+        return partnerSearches;
     }
 
-    public void setFounderSearches(List<FounderSearch> founderSearches) {
-        this.founderSearches = founderSearches;
+    public void setFounderSearches(List<PartnerSearch> partnerSearches) {
+        this.partnerSearches = partnerSearches;
     }
 
     public List<InvestorSearch> getInvestorSearches() {

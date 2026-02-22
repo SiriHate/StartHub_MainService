@@ -33,8 +33,8 @@ public class SurveySubmission {
 
     @Min(1)
     @Max(5)
-    @Column(name = "average_rating")
-    private Integer averageRating;
+    @Column(nullable = false)
+    private Integer rating;
 
     public SurveySubmission() {
         this.submittedAt = LocalDateTime.now();
@@ -82,11 +82,11 @@ public class SurveySubmission {
         this.responses = responses;
     }
 
-    public Integer getAverageRating() {
-        return averageRating;
+    public Integer getRating() {
+        return rating;
     }
 
-    public void setAverageRating(Integer averageRating) {
-        this.averageRating = averageRating;
+    public void setRating(Integer averageRating) {
+        this.rating = averageRating;
     }
 }

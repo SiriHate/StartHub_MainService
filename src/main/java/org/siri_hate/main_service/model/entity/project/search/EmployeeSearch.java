@@ -16,7 +16,7 @@ public class EmployeeSearch {
     private Project project;
 
     @Column(name = "specialization_name")
-    private String specializationName;
+    private String specialization;
 
     private String about;
 
@@ -38,12 +38,12 @@ public class EmployeeSearch {
         this.project = project;
     }
 
-    public String getSpecializationName() {
-        return specializationName;
+    public String getSpecialization() {
+        return specialization;
     }
 
-    public void setSpecializationName(String specializationName) {
-        this.specializationName = specializationName;
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
     }
 
     public String getAbout() {

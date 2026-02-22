@@ -100,15 +100,12 @@ public class ProjectSurveyService {
                 .orElseThrow(EntityNotFoundException::new);
         User respondent = userService.findOrCreateUser(username);
 
-        // Создаём submission
         SurveySubmission submission = new SurveySubmission(survey, respondent);
 
-        // Строим карту вопросов по ID для быстрого поиска
         Map<Long, SurveyQuestion> questionsById = survey.getQuestions()
                 .stream()
                 .collect(Collectors.toMap(SurveyQuestion::getId, q -> q));
 
-        // Конвертируем каждый ответ из DTO в сущность
         for (SurveyAnswerRequestDTO answerRequest : request.getAnswers()) {
             SurveyQuestion question = questionsById.get(answerRequest.getQuestionId());
             if (question == null) {

@@ -7,9 +7,7 @@ import org.siri_hate.main_service.model.entity.project.Project;
 import org.siri_hate.main_service.model.entity.project.ProjectCategory;
 import org.siri_hate.main_service.model.entity.project.ProjectMember;
 import org.siri_hate.main_service.model.entity.project.search.EmployeeSearch;
-import org.siri_hate.main_service.model.entity.project.search.FounderSearch;
-import org.siri_hate.main_service.model.entity.project.search.InvestorSearch;
-import org.siri_hate.main_service.model.entity.project.search.MentorSearch;
+import org.siri_hate.main_service.model.entity.project.search.PartnerSearch;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ProjectSpecification {
@@ -20,6 +18,15 @@ public class ProjectSpecification {
                 return criteriaBuilder.conjunction();
             }
             return criteriaBuilder.like(root.get("name"), projectName + "%");
+        };
+    }
+
+    public static Specification<Project> projectNameContainsIgnoreCase(String projectName) {
+        return (root, query, cb) -> {
+            if (projectName == null || projectName.isEmpty()) {
+                return cb.conjunction();
+            }
+            return cb.like(cb.lower(root.get("name")), "%" + projectName.toLowerCase() + "%");
         };
     }
 
@@ -63,29 +70,21 @@ public class ProjectSpecification {
         };
     }
 
-    /**
-     * Проекты, у которых есть хотя бы один баннер поиска сотрудника.
-     * Если указана specialization — фильтр по specializationName (like).
-     */
     public static Specification<Project> hasEmployeeSearch(String specialization) {
         return (root, query, cb) -> {
             query.distinct(true);
             Join<Project, EmployeeSearch> join = root.join("employeeSearches");
             if (specialization != null && !specialization.isBlank()) {
-                return cb.like(cb.lower(join.get("specializationName")), "%" + specialization.toLowerCase() + "%");
+                return cb.like(cb.lower(join.get("specialization")), "%" + specialization.toLowerCase() + "%");
             }
             return cb.conjunction();
         };
     }
 
-    /**
-     * Проекты, у которых есть хотя бы один баннер поиска сооснователя.
-     * Если указан domain — фильтр по domain (like).
-     */
     public static Specification<Project> hasFounderSearch(String domain) {
         return (root, query, cb) -> {
             query.distinct(true);
-            Join<Project, FounderSearch> join = root.join("founderSearches");
+            Join<Project, PartnerSearch> join = root.join("founderSearches");
             if (domain != null && !domain.isBlank()) {
                 return cb.like(cb.lower(join.get("domain")), "%" + domain.toLowerCase() + "%");
             }
@@ -93,9 +92,6 @@ public class ProjectSpecification {
         };
     }
 
-    /**
-     * Проекты, у которых есть хотя бы один баннер поиска инвестора.
-     */
     public static Specification<Project> hasInvestorSearch() {
         return (root, query, cb) -> {
             query.distinct(true);
@@ -104,9 +100,6 @@ public class ProjectSpecification {
         };
     }
 
-    /**
-     * Проекты, у которых есть хотя бы один баннер поиска ментора.
-     */
     public static Specification<Project> hasMentorSearch() {
         return (root, query, cb) -> {
             query.distinct(true);

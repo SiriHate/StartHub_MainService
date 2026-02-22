@@ -15,6 +15,8 @@ public class InvestorSearch {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
+    private String domain;
+
     private String about;
 
     public InvestorSearch() {}
@@ -33,6 +35,14 @@ public class InvestorSearch {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public String getAbout() {

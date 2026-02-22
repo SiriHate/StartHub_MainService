@@ -2,10 +2,7 @@ package org.siri_hate.main_service.controller;
 
 import org.jspecify.annotations.Nullable;
 import org.siri_hate.main_service.api.ProjectApi;
-import org.siri_hate.main_service.dto.MemberProjectRoleDTO;
-import org.siri_hate.main_service.dto.ProjectFullResponseDTO;
-import org.siri_hate.main_service.dto.ProjectPageResponseDTO;
-import org.siri_hate.main_service.dto.ProjectRequestDTO;
+import org.siri_hate.main_service.dto.*;
 import org.siri_hate.main_service.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,8 +51,8 @@ public class ProjectController implements ProjectApi {
     }
 
     @Override
-    public ResponseEntity<ProjectPageResponseDTO> getProjects(Integer page, Integer size, String category, String query, Boolean moderationPassed) {
-        var response = projectService.getProjects(category, query, page, size, moderationPassed);
+    public ResponseEntity<ProjectPageResponseDTO> getProjects(Boolean moderationPassed, Integer page, Integer size, @Nullable SeekingRoleDTO seekingRole, @Nullable String category, @Nullable String domain, @Nullable String query) {
+        var response = projectService.getProjects(category, seekingRole, domain, query, page, size, moderationPassed);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

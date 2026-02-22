@@ -2,15 +2,13 @@ package org.siri_hate.main_service.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.siri_hate.main_service.dto.MemberProjectRoleDTO;
-import org.siri_hate.main_service.dto.ProjectFullResponseDTO;
-import org.siri_hate.main_service.dto.ProjectPageResponseDTO;
-import org.siri_hate.main_service.dto.ProjectRequestDTO;
+import org.siri_hate.main_service.dto.*;
 import org.siri_hate.main_service.model.entity.project.ProjectLike;
-import org.siri_hate.main_service.model.entity.project.ProjectMember;
+import org.siri_hate.main_service.model.entity.project.search.SeekingRole;
 import org.siri_hate.main_service.model.mapper.ProjectMapper;
 import org.siri_hate.main_service.model.entity.project.Project;
 import org.siri_hate.main_service.model.entity.User;
+import org.siri_hate.main_service.model.mapper.SearchMapper;
 import org.siri_hate.main_service.repository.ProjectRepository;
 import org.siri_hate.main_service.repository.specification.ProjectSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +18,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class ProjectService {
@@ -33,6 +28,7 @@ public class ProjectService {
     private final UserService userService;
     private final ProjectSubscriberService projectSubscriberService;
     private final FileService fileService;
+    private final SearchMapper searchMapper;
 
     @Autowired
     public ProjectService(ProjectRepository projectRepository,
@@ -40,7 +36,8 @@ public class ProjectService {
                           ProjectCategoryService projectCategoryService,
                           UserService userService,
                           ProjectSubscriberService projectSubscriberService,
-                          FileService fileService
+                          FileService fileService,
+                          SearchMapper searchMapper
     )
     {
         this.projectRepository = projectRepository;
@@ -49,6 +46,7 @@ public class ProjectService {
         this.userService = userService;
         this.projectSubscriberService = projectSubscriberService;
         this.fileService = fileService;
+        this.searchMapper = searchMapper;
     }
 
     @Transactional
@@ -62,16 +60,20 @@ public class ProjectService {
         return projectMapper.toProjectFullResponse(project);
     }
 
-    public ProjectPageResponseDTO getProjects(String category, String query, int page, int size, boolean isModerationPassed) {
-        Specification<Project> specification = Specification.allOf(
-                ProjectSpecification.projectNameStartsWith(query),
-                ProjectSpecification.hasCategory(category),
-                ProjectSpecification.moderationPassed(isModerationPassed)
-        );
-        Page<Project> projects = projectRepository.findAll(specification, PageRequest.of(page, size));
-        if (projects.isEmpty()) {
-            throw new EntityNotFoundException();
+    public ProjectPageResponseDTO getProjects(String category, SeekingRoleDTO seekingRoleDTO, String domain, String query, int page, int size, boolean isModerationPassed) {
+        Specification<Project> spec = Specification.where(ProjectSpecification.projectNameContainsIgnoreCase(query));
+        spec = spec.and(ProjectSpecification.hasCategory(category));
+        spec = spec.and(ProjectSpecification.moderationPassed(isModerationPassed));
+        if (seekingRoleDTO != null) {
+            SeekingRole seekingRole = searchMapper.toSeekingRole(seekingRoleDTO);
+            switch (seekingRole) {
+                case EMPLOYEE -> spec = spec.and(ProjectSpecification.hasEmployeeSearch(domain));
+                case PARTNER -> spec = spec.and(ProjectSpecification.hasFounderSearch(domain));
+                case INVESTOR -> spec = spec.and(ProjectSpecification.hasInvestorSearch());
+                case MENTOR -> spec = spec.and(ProjectSpecification.hasMentorSearch());
+            }
         }
+        Page<Project> projects = projectRepository.findAll(spec, PageRequest.of(page, size));
         return projectMapper.toProjectPageResponse(projects);
     }
 
@@ -140,18 +142,9 @@ public class ProjectService {
 
         project.setCategory(projectCategoryService.getProjectCategoryEntityById(request.getCategoryId()));
 
-        String imageKey = fileService.uploadProjectLogo(logo);
-        project.setImageKey(imageKey);
-
-        if (request.getMembers() != null) {
-            project.getMembers().clear();
-            for (var memberRequest : request.getMembers()) {
-                ProjectMember member = new ProjectMember();
-                member.setUser(userService.findOrCreateUser(memberRequest.getUsername()));
-                member.setRole(memberRequest.getRole());
-                member.setProject(project);
-                project.getMembers().add(member);
-            }
+        if (logo != null && !logo.isEmpty()) {
+            String imageKey = fileService.uploadProjectLogo(logo);
+            project.setImageKey(imageKey);
         }
 
         projectRepository.save(project);

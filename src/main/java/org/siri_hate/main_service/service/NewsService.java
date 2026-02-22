@@ -86,8 +86,10 @@ public class NewsService {
     public NewsFullResponseDTO updateNews(Long id, NewsRequestDTO request, MultipartFile logo) {
         News news = newsRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         news = newsMapper.newsUpdate(request, news);
-        String imageKey = fileService.uploadNewsLogo(logo);
-        news.setImageKey(imageKey);
+        if (logo != null && !logo.isEmpty()) {
+            String imageKey = fileService.uploadNewsLogo(logo);
+            news.setImageKey(imageKey);
+        }
         newsRepository.save(news);
         return newsMapper.toNewsFullResponse(news);
     }

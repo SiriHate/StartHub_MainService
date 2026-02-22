@@ -87,8 +87,10 @@ public class ArticleService {
     public ArticleFullResponseDTO updateArticle(Long id, ArticleRequestDTO request, MultipartFile logo) {
         Article article = articleRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         article = articleMapper.articleUpdate(request, article);
-        String imageKey = fileService.uploadArticleLogo(logo);
-        article.setImageKey(imageKey);
+        if (logo != null && !logo.isEmpty()) {
+            String imageKey = fileService.uploadArticleLogo(logo);
+            article.setImageKey(imageKey);
+        }
         articleRepository.save(article);
         return articleMapper.toArticleFullResponseDTO(article);
     }

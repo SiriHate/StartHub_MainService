@@ -199,6 +199,78 @@ paths:
                 items:
                   $ref: '#/components/schemas/SurveySubmissionFullResponse'
 
+  /api/v1/main_service/projects/{projectId}/members:
+    get:
+      tags:
+        - ProjectMember
+      summary: Получение участников проекта
+      operationId: getProjectMembers
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список участников
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectMemberFullResponse'
+    post:
+      tags:
+        - ProjectMember
+      summary: Добавление участника в проект
+      operationId: addProjectMember
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectMemberRequest'
+      responses:
+        '201':
+          description: Участник добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMemberFullResponse'
+
+  /api/v1/main_service/projects/{projectId}/members/{memberId}:
+    delete:
+      tags:
+        - ProjectMember
+      summary: Удаление участника из проекта
+      operationId: removeProjectMember
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Участник удалён
+          content: { }
+
   /api/v1/main_service/projects/{projectId}/searches/employees:
     post:
       tags:
@@ -710,9 +782,16 @@ paths:
       description: Возвращает список проектов с поддержкой фильтрации по категории, поисковому запросу и статусу модерации. Поддерживает постраничный вывод.
       operationId: getProjects
       parameters:
+        - name: seekingRole
+          in: query
+          schema:
+            $ref: '#/components/schemas/SeekingRole'
         - name: category
           in: query
-          description: Фильтр по категории проекта
+          schema:
+            type: string
+        - name: domain
+          in: query
           schema:
             type: string
         - name: query
@@ -725,6 +804,7 @@ paths:
           description: Фильтр по статусу модерации
           schema:
             type: boolean
+          required: true
         - name: page
           in: query
           description: Номер страницы
@@ -2424,10 +2504,15 @@ components:
     ProjectMemberFullResponse:
       type: object
       properties:
+        memberId:
+          type: integer
+          format: int64
+          description: Идентификатор записи участника
+          example: 7
         id:
           type: integer
           format: int64
-          description: Идентификатор участника проекта
+          description: Идентификатор пользователя
           example: 15
         username:
           type: string
@@ -2584,11 +2669,6 @@ components:
         - description
         - categoryId
       properties:
-        members:
-          type: array
-          description: Участники проекта
-          items:
-            $ref: '#/components/schemas/ProjectMemberRequest'
         name:
           type: string
           description: Название проекта
@@ -2632,6 +2712,7 @@ components:
       type: object
       required:
         - answers
+        - rating
       properties:
         answers:
           type: array
@@ -2639,6 +2720,8 @@ components:
           minItems: 1
           items:
             $ref: '#/components/schemas/SurveyAnswerRequest'
+        rating:
+          type: integer
 
     SurveyAnswerRequest:
       type: object
@@ -2693,10 +2776,13 @@ components:
           description: Ответы пользователя на вопросы опроса
           items:
             $ref: '#/components/schemas/SurveyAnswerFullResponse'
-        averageRating:
+        rating:
           type: integer
-          description: Средняя оценка по опросу (если применимо)
+          description: Оценка проекта
           example: 4
+        submittedAt:
+          type: string
+          description: Дата отправки формы
 
     SurveyQuestionFullResponse:
       type: object
@@ -2831,6 +2917,10 @@ components:
           format: int64
           description: Идентификатор записи поиска инвестора
           example: 1
+        domain:
+          type: string
+          description: Направление деятельности
+          example: "FinTech"
         about:
           type: string
           description: Описание требований
@@ -2844,6 +2934,10 @@ components:
           format: int64
           description: Идентификатор записи поиска ментора
           example: 1
+        domain:
+          type: string
+          description: Направление деятельности
+          example: "EdTech"
         about:
           type: string
           description: Описание требований
@@ -2853,6 +2947,14 @@ components:
       type: string
       format: binary
 
+    SeekingRole:
+      type: string
+      enum:
+        - EMPLOYEE
+        - MENTOR
+        - INVESTOR
+        - PARTNER
+
     MemberProjectRole:
       type: string
       enum:
@@ -2860,6 +2962,7 @@ components:
         - MEMBER
 
   requestBodies:
+
     ArticleRequestWithImage:
       required: true
       content:
@@ -2871,6 +2974,7 @@ components:
                 $ref: '#/components/schemas/ArticleRequest'
               logo:
                 $ref: '#/components/schemas/ImageRequest'
+
     NewsRequestWithImage:
       required: true
       content:
@@ -2882,6 +2986,7 @@ components:
                 $ref: '#/components/schemas/NewsRequest'
               logo:
                 $ref: '#/components/schemas/ImageRequest'
+
     ProjectRequestWithImage:
       required: true
       content:
